@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/toulezu/io-command.svg?branch=master)](https://travis-ci.org/toulezu/io-command)
+
 # 远程在服务器端执行命令的小工具
 
 ## 简单说明
