@@ -17,19 +17,9 @@
 		<jdk.version>1.7</jdk.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<selenium-version>2.53.0</selenium-version>
-		<java.home>C:/Program Files/Java/jdk1.8.0_101</java.home>
 	</properties>
 
 	<repositories>
-		<repository>
-			<id>arrow-mvn-repo</id>
-			<url>https://raw.github.com/Netease/arrow/mvn-repo/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-
 		<repository>
 			<id>jee-utils-mvn-repo</id>
 			<url>https://raw.github.com/toulezu/jee-utils/mvn-repo/</url>
@@ -128,11 +118,7 @@
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<showWarnings>true</showWarnings>
-					<encoding>UTF-8</encoding>
-					<compilerArguments>
-						<verbose />
-						<bootclasspath>${java.home}/jre/lib/rt.jar;${java.home}/jre/lib/jce.jar</bootclasspath>
-					</compilerArguments>
+					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
 
@@ -176,7 +162,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<encoding>UTF-8</encoding>
+							<encoding>${project.build.sourceEncoding}</encoding>
 							<!-- 拷贝项目src/main/resources/下，除.cmd以外的所有文件到conf/目录下 -->
 							<outputDirectory>${project.build.directory}/conf</outputDirectory>
 							<resources>
@@ -198,7 +184,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<encoding>UTF-8</encoding>
+							<encoding>${project.build.sourceEncoding}</encoding>
 							<!-- 拷贝项目src/main/resources/下，除.cmd以外的所有文件到conf/目录下 -->
 							<outputDirectory>${project.build.directory}/res</outputDirectory>
 							<resources>
@@ -216,7 +202,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<encoding>UTF-8</encoding>
+							<encoding>${project.build.sourceEncoding}</encoding>
 							<!-- 只拷贝项目src/main/resources/目录下的.cmd文件到输出目录下 -->
 							<outputDirectory>${project.build.directory}</outputDirectory>
 							<resources>
@@ -240,7 +226,7 @@
 				<version>2.1</version>
 				<configuration>
 					<attach>true</attach>
-					<encoding>UTF-8</encoding>
+					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 				<executions>
 					<execution>
@@ -261,10 +247,6 @@
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
-					<compilerArguments>
-						<verbose />
-						<bootclasspath>${java.home}\jre\lib\rt.jar;${java.home}\jre\lib\jce.jar</bootclasspath>
-					</compilerArguments>
 					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
