@@ -32,11 +32,6 @@ public class SocketClient {
             writer.println(message);
         } catch (IOException e) {
         	logger.error("SocketClient send method has error", e);
-        } finally {
-        	try {
-            	writer.close();
-			} catch (Exception e2) {
-			}
         }
     }
 
