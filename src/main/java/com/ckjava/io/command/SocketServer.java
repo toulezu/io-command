@@ -2,8 +2,6 @@ package com.ckjava.io.command;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +10,6 @@ public class SocketServer {
 	private static Logger logger = LoggerFactory.getLogger(SocketServer.class);
 	
     private ServerSocket serverSocket;
-    private MessageHandler messageHandler;
-    private ExecutorService executeService = Executors.newCachedThreadPool();
 
     /**
      * 启动一个监听线程 ListeningThread
@@ -27,22 +23,14 @@ public class SocketServer {
      * @param port
      * @param handler
      */
-    public SocketServer(int port, MessageHandler handler) {
-        messageHandler = handler;
+    public SocketServer(int port) {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
         	logger.info("init ServerSocket has error", e);
         }
-        executeService.submit(new ListeningThread(this, serverSocket));
-    }
-    
-    public void setMessageHandler(MessageHandler handler) {
-        messageHandler = handler;
-    }
-
-    public MessageHandler getMessageHandler() {
-        return messageHandler;
+        ListeningThread listeningThread = new ListeningThread(serverSocket);
+        listeningThread.start();
     }
     
     /*
@@ -52,7 +40,6 @@ public class SocketServer {
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
-                executeService.shutdown();
             }
         } catch (IOException e) {
         	logger.info("close ServerSocket has error", e);

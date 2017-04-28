@@ -11,8 +11,8 @@ public class SocketExample {
      * @param args
      * @throws IOException 
      */
-    public static void main(String[] args) throws IOException {
-        SocketServer server = new SocketServer(5556, new EchoHandler());
+    public static void main(String[] args) throws Exception {
+        SocketServer server = new SocketServer(5556);
         System.out.println("Server starts.");
         try {
             Thread.sleep(1000);

@@ -8,12 +8,11 @@ import com.ckjava.io.command.SocketServer;
  *
  * 2017年4月7日-下午7:22:54
  */
-public class TestServer {
+public class TestReadFileServer {
 	public static void main(String[] args) {
 		
-		int port = 9800;
-		new SocketServer(port);
-        System.out.println("Server starts, port is " + port);
+		new SocketServer(9001);
+        System.out.println("Server starts.");
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

@@ -1,7 +1,7 @@
 package test.com.ckjava.io.command;
 
 import com.ckjava.io.command.Connection;
-import com.ckjava.io.command.MessageHandler;
+import com.ckjava.io.command.handler.MessageHandler;
 
 public class EchoHandler implements MessageHandler {
 	

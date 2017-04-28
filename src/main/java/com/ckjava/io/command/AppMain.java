@@ -19,7 +19,7 @@ public class AppMain {
 			logger.warn("want option -p, unkown option " + pOption);
 			System.exit(0);
 		}
-		new SocketServer(port, new CommandHandler());
+		new SocketServer(port);
 		
 		logger.info("server start, port is " + port);
 	}
