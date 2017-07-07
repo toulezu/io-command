@@ -4,32 +4,33 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ckjava.utils.StringUtils;
+import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.io.command.handler.AsyncCommandHandler;
+import com.ckjava.io.command.handler.CommandHandler;
 import com.ckjava.io.command.handler.ReadFileHandler;
-import com.ckjava.io.command.handler.SyncCommandHandler;
 import com.ckjava.io.command.handler.WriteFileHandler;
+import com.ckjava.io.command.thread.ThreadService;
+import com.ckjava.utils.StringUtils;
 
 /**
  * 处理每个用户的一次连接请求
  * @author chen_k
  *
- * 2017年4月17日-下午4:43:11
  */
 public class ConnectionThread implements Runnable {
 	
 	private static Logger logger = LoggerFactory.getLogger(ConnectionThread.class);
+	private static final String COMMAND_REG = "(\\$\\{.*\\})";
 	
     private Socket socket;
     private Connection connection;
     private boolean isRunning;
-    private ExecutorService executeService = Executors.newCachedThreadPool();
 
     public ConnectionThread(Socket socket) {
         this.socket = socket;
@@ -39,48 +40,75 @@ public class ConnectionThread implements Runnable {
 
     @Override
     public void run() {
+    	// read message from socket
+    	BufferedReader reader = null;
+    	try {
+    		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		} catch (Exception e) {
+			logger.error("ConnectionThread read InputStream from Socket has error", e);
+		}
+    	
+    	String command = null;
         while(isRunning) {
             // Check whether the socket is closed.
             if (socket.isClosed()) {
                 isRunning = false;
                 break;
             }
-            
-            BufferedReader reader;
             try {
-            	// 从socket中读取信息
-                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                String message = reader.ready() ? reader.readLine() : "";
-                if (StringUtils.isNotBlank(message)) {
-                	logger.info("client send message:" + message);
-                	switch (message) {
-					case IOSigns.CLOSE_SIGN:// 关闭 当客户端发送数据,读取响应后,不仅关闭自己的socket,还要通知服务器端关闭自己的socket
-						isRunning = false;
+            	if (reader.ready() && StringUtils.isNotBlank((command = reader.readLine()))) {
+                	logger.info("client send command:" + command);
+                	String detail = getCommandDetail(reader.readLine());
+                	if (StringUtils.isNotNullAndNotBlank(detail)) {
+                		logger.info("client send command detail:" + detail);	
+                	}
+                	
+                	switch (command) {
+    				case IOSigns.CLOSE_SERVER_SIGN:// 关闭 当客户端发送数据,读取响应后,不仅关闭自己的socket,还要通知服务器端关闭自己的socket
+    					isRunning = false;
                 		logger.info("client want server close, server close socket");
-						break;
-					case IOSigns.RUN_ASYNC_COMMAND_SIGN: // 执行异步命令
-						executeService.submit(new AsyncCommandHandler(connection, reader.readLine()));
-						continue;
-					case IOSigns.RUN_SYNC_COMMAND_SIGN: // 执行同步命令
-						new SyncCommandHandler().onReceive(connection, reader.readLine());
-						continue;
-					case IOSigns.READ_FILE_SIGN: // 读取文件
-						new ReadFileHandler().onReceive(connection, reader.readLine());
-						continue;
-					case IOSigns.WRITE_FILE_SIGN: // 写文件
-						new WriteFileHandler().onReceive(connection, "", reader.readLine());
-						continue;
-					default:
-						continue;
-					}
+    					break;
+    				case IOSigns.RUN_ASYNC_COMMAND_SIGN: // 执行异步命令
+    					ThreadService.getExecutorService().submit(new AsyncCommandHandler(connection, detail));
+    					continue;
+    				case IOSigns.RUN_SYNC_COMMAND_SIGN:
+    					ThreadService.getExecutorService().submit(new CommandHandler(connection, detail));
+    					continue;
+    				case IOSigns.READ_FILE_SIGN: // 读取文件
+    					ThreadService.getExecutorService().submit(new ReadFileHandler(connection, detail));
+    					continue;
+    				case IOSigns.WRITE_FILE_SIGN: // 写文件
+    					new WriteFileHandler().onReceive(connection, "", detail);
+    					continue;
+    				default:
+    					continue;
+    				}
                 	logger.info("server finish process");
                 }
-            } catch (IOException e) {
-            	logger.error("ConnectionThread read infomation from socket has error", e);
-            	isRunning = false;
-                break;
-            }
+			} catch (Exception e) {
+				isRunning = false;
+				logger.error("ConnectionThread read InputStream from Socket ready() or readLine() has error", e);
+				break;
+			}
         }
+    }
+    
+    public String getCommandDetail(String message) {
+    	if (StringUtils.isNotBlank(message) && message.contains("${") && message.contains("}")) {
+			Pattern pattern = Pattern.compile(COMMAND_REG);
+			Matcher matcher = pattern.matcher(message);
+			if (matcher.find() && matcher.groupCount() == 1) {
+				connection.writeUTFString(IOSigns.FOUND_COMMAND);
+				
+				String matcherStr = matcher.group(1); // 获取匹配的数字，从1开始
+				return matcherStr.replaceAll("\\$\\{", "").replaceAll("\\}", "");
+			} else {
+				connection.writeUTFString(IOSigns.NOT_FOUND_COMMAND);
+			}
+    	} else {
+    		connection.writeUTFString(IOSigns.NOT_FOUND_COMMAND);
+    	}
+    	return null;
     }
     
     public void stopRunning() {

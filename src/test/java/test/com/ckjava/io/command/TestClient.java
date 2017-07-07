@@ -13,10 +13,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.ckjava.io.command.IOSigns;
 import com.ckjava.io.command.SocketClient;
+import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.utils.CommandUtils;
-import org.junit.Test;
 
 /**
  * client 必须从 socket中读取信息,否则 getInputStream 会将本地缓冲区写满导致程序异常
@@ -29,8 +28,6 @@ import org.junit.Test;
  * 2017年4月7日-下午7:15:45
  */
 public class TestClient {
-	
-	private static final String CHARSET = "GBK";
 	
 	public static void main(String[] args) {
 		//String host = "10.2.75.149";
@@ -206,8 +203,7 @@ public class TestClient {
     		}
     		
     		// 通知服务器端关闭 socket
-    		client.send(IOSigns.CLOSE_SIGN); 
-			client.close();
+    		client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); 
 			System.out.println("关闭socket连接成功");
 			
 			// 5.解析覆盖行数 
@@ -235,7 +231,7 @@ public class TestClient {
 		
 	}
 	
-	@org.junit.Test
+	//@Test
 	public void getCoverageLine() {
 		// 从文件中加载 HTML 文档
 		File input = new File("H:/io-command-files/summary.htm"); 
@@ -256,7 +252,7 @@ public class TestClient {
 		}
 	}
 
-	@Test
+	//@Test
 	public void findAndCloseProcess() {
 		String[] killProcess = {"python.exe", "TaobaoProtect.exe"};
 		StringBuffer tasks = new StringBuffer();
@@ -317,71 +313,4 @@ public class TestClient {
 		
 	}
 	
-	
-	/**
-	 * 执行命令
-	 */
-	@Test
-	public void testRunCommand() {
-        try {
-        	//String ip = "10.32.80.21";
-        	String ip = "10.2.75.149";
-        	SocketClient client = new SocketClient(InetAddress.getByName(ip), 8083);
-    		client.send(IOSigns.RUN_SYNC_COMMAND_SIGN);
-    		client.send("${cmd /C ipconfig}");
-    		String sign = client.readUTFString();
-    		if (sign.equals(IOSigns.FOUND_COMMAND)) {
-    			while (true) {
-    				sign = client.readUTFString();
-    				System.out.println(sign);
-    				if (sign.contains("Successfully opened log file")) { // 表示需要输入Q来生成coverage.xml
-    					client.send(IOSigns.WRITE_FILE_SIGN);
-    					client.send("${start_robot}");
-    					
-    				}
-    				if (sign.equals(IOSigns.FINISH_SIGN)) {
-    					break;
-    				}
-				}
-    		}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * 读取指定文件
-	 */
-	@Test
-	public void testReadFile() {
-		String remoteFile = "${D:/apps/iislogCollector/match.txt}";
-       // String remoteFile = "${D:/io-command/io-command.jar}";
-		
-        try {
-        	String path = "H:/io-command-files/";
-        	SocketClient client = new SocketClient(InetAddress.getByName("10.3.2.210"), 8083);
-    		client.send(IOSigns.READ_FILE_SIGN);
-    		client.send(remoteFile);
-    		String sign = client.readUTFString();
-    		if (sign.equals(IOSigns.FOUND_COMMAND)) {
-    			sign = client.readUTFString();
-    			if (sign.equals(IOSigns.FOUND_FILE_SIGN)) {
-    				String fileName = client.readUTFString();
-    				Long fileSize = client.readLong();
-    				String localFile = path+fileName;
-    				String result = client.readFile(localFile, fileSize);
-    				if (result == null) {
-    					System.out.println("文件传输完毕, path = " + localFile + ", size = " + fileSize + " byte");
-						client.send(IOSigns.CLOSE_SIGN); // 通知服务器端关闭 socket
-						client.close();
-    				} else {
-    					System.err.println(result);
-    				}
-    			}
-    		}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }

@@ -3,11 +3,11 @@ package com.ckjava.io.command;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.ckjava.io.command.thread.ThreadService;
 
 /**
  * client 每创建一个连接就新建一个 ConnectionThread 对象并放入 connThreads 队列中
@@ -23,9 +23,6 @@ public class ListeningThread extends Thread {
 	
     private ServerSocket serverSocket;
     private boolean isRunning;
-    
-    // 每个用户的一次连接请求都放在一个单独的线程中执行
-    private ExecutorService executeService = Executors.newCachedThreadPool();
 
     public ListeningThread(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
@@ -44,7 +41,8 @@ public class ListeningThread extends Thread {
             	// server 端卡在这里当有  client 发起连接的时候才会继续运行, 每个连接创建一个  ConnectionThread 对象
             	// 每个 ConnectionThread 对象处理一个 Client
                 Socket socket = serverSocket.accept();
-                executeService.submit(new ConnectionThread(socket));
+                logger.info("client accept");
+                ThreadService.getExecutorService().submit(new ConnectionThread(socket));
             } catch (IOException e) {
             	logger.error("ListeningThread.run has error", e);
             }
@@ -53,6 +51,5 @@ public class ListeningThread extends Thread {
     
     public void stopRunning() {
         isRunning = false;
-        executeService.shutdown();
     }
 } 

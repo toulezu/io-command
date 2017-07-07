@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import com.ckjava.utils.StringUtils;
 import com.ckjava.io.command.Connection;
-import com.ckjava.io.command.IOSigns;
+import com.ckjava.io.command.constants.IOSigns;
 
 /**
  * 写文件

@@ -19,6 +19,8 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ckjava.io.command.constants.IOSigns;
+
 public class SocketClient {
 
 	private static Logger logger = LoggerFactory.getLogger(SocketClient.class);
@@ -33,7 +35,7 @@ public class SocketClient {
 		}
 	}
 
-	public void send(String message) {
+	public SocketClient send(String message) {
 		PrintWriter writer = null;
 		try {
 			writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
@@ -41,6 +43,7 @@ public class SocketClient {
 		} catch (IOException e) {
 			logger.error("SocketClient send method has error", e);
 		}
+		return this;
 	}
 	
 	public void waitRead(final InputStream dis) throws IOException {
@@ -176,8 +179,7 @@ public class SocketClient {
 		} finally {
 			try {
 				fos.close();
-				send(IOSigns.CLOSE_SIGN); // 通知服务器端关闭 socket
-				close(); // 关闭客户端 socket
+				send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭 socket
 			} catch (Exception e2) {
 			}
 		}
@@ -202,8 +204,8 @@ public class SocketClient {
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), charsetName));
 			while ((tempStr = reader.readLine()) != null) {
 				if (tempStr.equals(IOSigns.FINISH_SIGN)) {
-					send(IOSigns.CLOSE_SIGN); // 通知服务器端关闭 socket
-					close(); // 关闭客户端 socket
+					send(IOSigns.CLOSE_SERVER_SIGN); // 通知服务器端关闭 socket
+					closeMe(); // 关闭客户端 socket
 					break;
 				} else {
 					runResult.append(tempStr).append("\n");
@@ -221,7 +223,7 @@ public class SocketClient {
 		}
 	}
 
-	public void close() {
+	public SocketClient closeMe() {
 		try {
 			if (socket != null && !socket.isClosed()) {
 				socket.close();
@@ -229,5 +231,6 @@ public class SocketClient {
 		} catch (IOException e) {
 			logger.error("SocketClient close method has error", e);
 		}
+		return this;
 	}
 }

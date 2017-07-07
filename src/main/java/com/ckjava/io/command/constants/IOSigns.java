@@ -1,11 +1,11 @@
-package com.ckjava.io.command;
+package com.ckjava.io.command.constants;
 
 public class IOSigns {
 	public static final String FINISH_SIGN = "finish";
 	public static final String FINISH_RUN_SYNC_COMMAND_SIGN = "finish_run_sync_command";
 	public static final String FINISH_RUN_ASYNC_COMMAND_SIGN = "finish_run_async_command";
 	public static final String FINISH_WRITE_FILE_SIGN = "finish_write_file";
-	public static final String CLOSE_SIGN = "close";
+	public static final String CLOSE_SERVER_SIGN = "close";
 	public static final String ERROR_SIGN = "error";
 	
 	public static final String FOUND_COMMAND = "found_command";

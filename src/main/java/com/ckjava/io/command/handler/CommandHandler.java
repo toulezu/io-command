@@ -7,10 +7,10 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ckjava.io.command.Connection;
+import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.utils.CommandUtils;
 import com.ckjava.utils.StringUtils;
-import com.ckjava.io.command.Connection;
-import com.ckjava.io.command.IOSigns;
 
 /**
  * 处理命令
@@ -19,14 +19,23 @@ import com.ckjava.io.command.IOSigns;
  *
  * 2017年4月11日-下午4:10:44
  */
-public class SyncCommandHandler implements MessageHandler {
+public class CommandHandler implements Runnable {
 	
-	private static Logger logger = LoggerFactory.getLogger(SyncCommandHandler.class);
-
+	private static Logger logger = LoggerFactory.getLogger(CommandHandler.class);
+	
 	private static final String COMMAND_REG = "(\\$\\{.*\\})";
 	
+	private Connection connection;
+	private String message;
+	
+	public CommandHandler(Connection connection, String message) {
+		super();
+		this.connection = connection;
+		this.message = message;
+	}
+
 	@Override
-	public void onReceive(Connection connection, String message) {
+	public void run() {
 		if (StringUtils.isNotBlank(message) && message.contains("${") && message.contains("}")) {
 			Pattern pattern = Pattern.compile(COMMAND_REG);
 			Matcher matcher = pattern.matcher(message);

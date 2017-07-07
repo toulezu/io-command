@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.ckjava.utils.CommandUtils;
 import com.ckjava.utils.StringUtils;
 import com.ckjava.io.command.Connection;
-import com.ckjava.io.command.IOSigns;
+import com.ckjava.io.command.constants.IOSigns;
 
 /**
  * 处理命令

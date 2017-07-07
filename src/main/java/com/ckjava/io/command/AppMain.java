@@ -5,6 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import com.ckjava.utils.ArrayUtils;
 
+/**
+ * the main class of this app
+ * @author chen_k
+ *
+ */
 public class AppMain {
 
 	private static Logger logger = LoggerFactory.getLogger(AppMain.class);
