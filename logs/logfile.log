@@ -861,3 +861,101 @@ java.net.ConnectException: Connection refused: connect
 2017-07-07 10:58:17 [pool-2-thread-1]-[INFO] client send command:close
 2017-07-07 10:58:17 [pool-2-thread-1]-[INFO] client want server close, server close socket
 2017-07-07 10:58:17 [pool-2-thread-1]-[INFO] server finish process
+2017-07-07 11:05:53 [Thread-0]-[INFO] client accept
+2017-07-07 11:05:53 [Thread-0]-[INFO] client accept
+2017-07-07 11:05:53 [Thread-0]-[INFO] client accept
+2017-07-07 11:05:53 [pool-2-thread-3]-[INFO] client send command:run_sync_command
+2017-07-07 11:05:53 [pool-2-thread-3]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:05:53 [pool-2-thread-1]-[INFO] client send command:run_sync_command
+2017-07-07 11:05:53 [pool-2-thread-1]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:05:53 [pool-2-thread-2]-[INFO] client send command:run_sync_command
+2017-07-07 11:05:53 [pool-2-thread-2]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:05:53 [Thread-0]-[INFO] client accept
+2017-07-07 11:05:53 [pool-2-thread-4]-[INFO] client send command:run_sync_command
+2017-07-07 11:05:53 [pool-2-thread-4]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:06:27 [Thread-0]-[INFO] client accept
+2017-07-07 11:06:27 [pool-2-thread-1]-[INFO] client send command:run_sync_command
+2017-07-07 11:06:27 [pool-2-thread-1]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:06:27 [Thread-0]-[INFO] client accept
+2017-07-07 11:06:27 [pool-2-thread-3]-[INFO] client send command:run_sync_command
+2017-07-07 11:06:27 [pool-2-thread-3]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:08:59 [Thread-0]-[INFO] client accept
+2017-07-07 11:08:59 [Thread-0]-[INFO] client accept
+2017-07-07 11:08:59 [pool-2-thread-1]-[INFO] client send command:run_sync_command
+2017-07-07 11:08:59 [pool-2-thread-1]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:08:59 [pool-2-thread-2]-[INFO] client send command:run_sync_command
+2017-07-07 11:08:59 [pool-2-thread-2]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:08:59 [pool-2-thread-4]-[INFO] thread name = pool-2-thread-4, start execute command = cmd /C ipconfig
+2017-07-07 11:08:59 [pool-2-thread-3]-[INFO] thread name = pool-2-thread-3, start execute command = cmd /C ipconfig
+2017-07-07 11:08:59 [pool-2-thread-4]-[INFO] thread name = pool-2-thread-4, finish execute command = cmd /C ipconfig
+2017-07-07 11:08:59 [pool-2-thread-3]-[INFO] thread name = pool-2-thread-3, finish execute command = cmd /C ipconfig
+2017-07-07 11:08:59 [pool-2-thread-1]-[INFO] client send command:close
+2017-07-07 11:08:59 [pool-2-thread-1]-[INFO] client want server close, server close socket
+2017-07-07 11:08:59 [pool-2-thread-1]-[INFO] server finish process
+2017-07-07 11:08:59 [Thread-0]-[INFO] client accept
+2017-07-07 11:08:59 [pool-2-thread-4]-[INFO] client send command:run_sync_command
+2017-07-07 11:08:59 [pool-2-thread-4]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:08:59 [Thread-0]-[INFO] client accept
+2017-07-07 11:08:59 [pool-2-thread-1]-[INFO] client send command:run_sync_command
+2017-07-07 11:08:59 [pool-2-thread-1]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:08:59 [pool-2-thread-3]-[INFO] thread name = pool-2-thread-3, start execute command = cmd /C ipconfig
+2017-07-07 11:08:59 [pool-2-thread-2]-[INFO] client send command:close
+2017-07-07 11:08:59 [pool-2-thread-2]-[INFO] client want server close, server close socket
+2017-07-07 11:08:59 [pool-2-thread-2]-[INFO] server finish process
+2017-07-07 11:08:59 [pool-2-thread-2]-[INFO] thread name = pool-2-thread-2, start execute command = cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-2]-[INFO] thread name = pool-2-thread-2, finish execute command = cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-3]-[INFO] thread name = pool-2-thread-3, finish execute command = cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] client send command:close
+2017-07-07 11:09:00 [Thread-0]-[INFO] client accept
+2017-07-07 11:09:00 [pool-2-thread-2]-[INFO] client send command:run_sync_command
+2017-07-07 11:09:00 [pool-2-thread-2]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-3]-[INFO] thread name = pool-2-thread-3, start execute command = cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] client want server close, server close socket
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] server finish process
+2017-07-07 11:09:00 [pool-2-thread-1]-[INFO] client send command:close
+2017-07-07 11:09:00 [pool-2-thread-1]-[INFO] client want server close, server close socket
+2017-07-07 11:09:00 [pool-2-thread-1]-[INFO] server finish process
+2017-07-07 11:09:00 [Thread-0]-[INFO] client accept
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] client send command:run_sync_command
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-1]-[INFO] thread name = pool-2-thread-1, start execute command = cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-1]-[INFO] thread name = pool-2-thread-1, finish execute command = cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-3]-[INFO] thread name = pool-2-thread-3, finish execute command = cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-2]-[INFO] client send command:close
+2017-07-07 11:09:00 [pool-2-thread-2]-[INFO] client want server close, server close socket
+2017-07-07 11:09:00 [pool-2-thread-2]-[INFO] server finish process
+2017-07-07 11:09:00 [Thread-0]-[INFO] client accept
+2017-07-07 11:09:00 [pool-2-thread-1]-[INFO] client send command:run_sync_command
+2017-07-07 11:09:00 [pool-2-thread-1]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-3]-[INFO] thread name = pool-2-thread-3, start execute command = cmd /C ipconfig
+2017-07-07 11:09:00 [Thread-0]-[INFO] client accept
+2017-07-07 11:09:00 [pool-2-thread-2]-[INFO] client send command:run_sync_command
+2017-07-07 11:09:00 [pool-2-thread-2]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] client send command:close
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] client want server close, server close socket
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] server finish process
+2017-07-07 11:09:00 [pool-2-thread-4]-[INFO] thread name = pool-2-thread-4, start execute command = cmd /C ipconfig
+2017-07-07 11:09:01 [pool-2-thread-3]-[INFO] thread name = pool-2-thread-3, finish execute command = cmd /C ipconfig
+2017-07-07 11:09:01 [pool-2-thread-4]-[INFO] thread name = pool-2-thread-4, finish execute command = cmd /C ipconfig
+2017-07-07 11:09:01 [pool-2-thread-1]-[INFO] client send command:close
+2017-07-07 11:09:01 [pool-2-thread-1]-[INFO] client want server close, server close socket
+2017-07-07 11:09:01 [pool-2-thread-1]-[INFO] server finish process
+2017-07-07 11:09:01 [Thread-0]-[INFO] client accept
+2017-07-07 11:09:01 [pool-2-thread-3]-[INFO] client send command:run_sync_command
+2017-07-07 11:09:01 [pool-2-thread-3]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:09:01 [pool-2-thread-4]-[INFO] thread name = pool-2-thread-4, start execute command = cmd /C ipconfig
+2017-07-07 11:09:01 [Thread-0]-[INFO] client accept
+2017-07-07 11:09:01 [pool-2-thread-1]-[INFO] client send command:run_sync_command
+2017-07-07 11:09:01 [pool-2-thread-1]-[INFO] client send command detail:cmd /C ipconfig
+2017-07-07 11:09:01 [pool-2-thread-2]-[INFO] client send command:close
+2017-07-07 11:09:01 [pool-2-thread-2]-[INFO] client want server close, server close socket
+2017-07-07 11:09:01 [pool-2-thread-2]-[INFO] server finish process
+2017-07-07 11:09:01 [pool-2-thread-2]-[INFO] thread name = pool-2-thread-2, start execute command = cmd /C ipconfig
+2017-07-07 11:09:01 [pool-2-thread-4]-[INFO] thread name = pool-2-thread-4, finish execute command = cmd /C ipconfig
+2017-07-07 11:09:01 [pool-2-thread-2]-[INFO] thread name = pool-2-thread-2, finish execute command = cmd /C ipconfig
+2017-07-07 11:09:01 [pool-2-thread-3]-[INFO] client send command:close
+2017-07-07 11:09:01 [pool-2-thread-3]-[INFO] client want server close, server close socket
+2017-07-07 11:09:01 [pool-2-thread-3]-[INFO] server finish process
+2017-07-07 11:09:01 [pool-2-thread-1]-[INFO] client send command:close
+2017-07-07 11:09:01 [pool-2-thread-1]-[INFO] client want server close, server close socket
+2017-07-07 11:09:01 [pool-2-thread-1]-[INFO] server finish process

@@ -18,7 +18,7 @@ import com.ckjava.io.command.constants.IOSigns;
 public class TestCommandHandler {
 
 	private static final int port = 19800;
-	private static ExecutorService executorservice = Executors.newFixedThreadPool(4);
+	private static ExecutorService executorservice = Executors.newFixedThreadPool(2);
 
 	@BeforeClass
 	public static void startServer() {
@@ -39,7 +39,7 @@ public class TestCommandHandler {
 	@Test
 	public void testMultiInvoke() {
 		List<RunCommandThread> threadList = new ArrayList<>();
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 10; i++) {
 			threadList.add(new RunCommandThread());
 		}
 		try {
@@ -72,6 +72,8 @@ public class TestCommandHandler {
 							break;
 						}
 					}
+				} else {
+					System.out.println(IOSigns.NOT_FOUND_COMMAND);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
