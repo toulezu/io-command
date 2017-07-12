@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
  *
  * 2017年4月11日-下午4:34:04
  */
-public class Connection {
-	private static Logger logger = LoggerFactory.getLogger(Connection.class);
+public class ServerConnection {
+	private static Logger logger = LoggerFactory.getLogger(ServerConnection.class);
 	
     private Socket socket;
 
-    public Connection(Socket socket) {
+    public ServerConnection(Socket socket) {
         this.socket = socket;
     }
     
@@ -90,11 +90,11 @@ public class Connection {
     }
     
     /**
-     * 读取文件并将文件流输出到 socket 的输出流中
+     * send file to client
      * 
      * @param filePath
      */
-    public void writeFile(File file) {
+    public void sendFileToClient(File file) {
     	DataInputStream dis = null;
         try {
         	dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
@@ -106,7 +106,7 @@ public class Connection {
         		tempLen += readLen;
 				dos.write(bytes, 0, readLen);
 			}
-        	logger.info("write file length = " + tempLen);
+        	logger.info("server send file to client size is " + tempLen + " byte");
         } catch (IOException e) {
         	logger.info("Connection object writeFile method has error", e);
         } finally {
@@ -118,11 +118,11 @@ public class Connection {
     }
     
     /**
-     * 从 socket 输入流中读取文件数据
+     * get file from client
      * 
      * @param filePath
      */
-    public String readFile(File savePath, Long fileSize) {
+    public String getFileFromClient(File savePath, Long fileSize) {
 		DataOutputStream fileOut = null;
 		try {
 			fileOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(savePath)));
@@ -132,7 +132,6 @@ public class Connection {
 			int tempSumLen = 0;
 			int readLen = 0;
 			
-			logger.info("remote file size is " + fileSize +" byte");
 			long firstTime = System.currentTimeMillis();
 			while ((readLen = dis.read(bytes)) != -1) {
 				tempSumLen += readLen;
@@ -149,13 +148,11 @@ public class Connection {
 					break;
 				}
 			}
-			
-			System.out.println("finish transaction file");
-			
+			logger.info("finish transaction file");
 			if (tempSumLen != fileSize) {
-				return "file size is " + fileSize + ", total read size is " + tempSumLen;
+				return "file size is " + fileSize + " byte, get file from client size is " + tempSumLen +" byte";
 			} else {
-				return null;
+				return "file is ok, get file from client size is " + tempSumLen + " byte";
 			}
 		} catch (Exception e) {
 			logger.error("Connection readFile method has error", e);

@@ -2,7 +2,7 @@ package com.ckjava.io.command.handler;
 
 import java.io.File;
 
-import com.ckjava.io.command.Connection;
+import com.ckjava.io.command.ServerConnection;
 import com.ckjava.io.command.constants.IOSigns;
 
 /**
@@ -12,12 +12,12 @@ import com.ckjava.io.command.constants.IOSigns;
  *
  * 2017年4月11日-下午4:10:44
  */
-public class ReadFileHandler implements Runnable {
+public class GetFileFromServerHandler implements Runnable {
 	
-	private Connection connection;
+	private ServerConnection connection;
 	private String detail;
 
-	public ReadFileHandler(Connection connection, String message) {
+	public GetFileFromServerHandler(ServerConnection connection, String message) {
 		super();
 		this.detail = message;
 		this.connection = connection;
@@ -30,7 +30,7 @@ public class ReadFileHandler implements Runnable {
 			connection.writeUTFString(IOSigns.FOUND_FILE_SIGN);
 			connection.writeUTFString(file.getName());
 			connection.writeLong(file.length());
-			connection.writeFile(file);
+			connection.sendFileToClient(file);
 		} else {
 			connection.writeUTFString(IOSigns.NOT_FOUND_FILE_SIGN);
 		}

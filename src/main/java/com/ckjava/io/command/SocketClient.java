@@ -125,13 +125,13 @@ public class SocketClient {
 	}
 
 	/**
-	 * client read file from socket
+	 * client get file from server
 	 * 
 	 * @param savePath
 	 * @param fileSize
 	 * @return
 	 */
-	public String readFile(String savePath, Long fileSize) {
+	public String getFileFromServer(String savePath, Long fileSize) {
 		DataOutputStream fileOut = null;
 		try {
 			fileOut = new DataOutputStream(new BufferedOutputStream(new BufferedOutputStream(new FileOutputStream(savePath))));
@@ -141,7 +141,6 @@ public class SocketClient {
 			int tempSumLen = 0;
 			int readLen = 0;
 			
-			logger.info("remote file size is " + fileSize +" byte");
 			long firstTime = System.currentTimeMillis();
 			while ((readLen = dis.read(bytes)) != -1) {
 				tempSumLen += readLen;
@@ -159,16 +158,14 @@ public class SocketClient {
 				}
 			}
 			
-			System.out.println("finish transaction file");
-			
 			if (tempSumLen != fileSize) {
-				return "file size is " + fileSize + ", total read size is " + tempSumLen;
+				return "file size is " + fileSize + " byte, get file from server size is " + tempSumLen + " byte";
 			} else {
-				return null;
+				return "file is ok, get file from server size is " + tempSumLen + " byte";
 			}
 		} catch (Exception e) {
-			logger.error("SocketClient readFile method has error", e);
-			return "SocketClient readFile method has error";
+			logger.error("SocketClient getFileFromServer has error", e);
+			return "SocketClient getFileFromServer has error";
 		} finally {
 			try {
 				fileOut.close();
@@ -178,13 +175,13 @@ public class SocketClient {
 	}
 	
 	/**
-	 * client write file to socket
+	 * client send file to server
 	 * 
 	 * @param savePath
 	 * @param fileSize
 	 * @return
 	 */
-	public void writeFile(File file) {
+	public void sendFileToServer(File file) {
     	DataInputStream dis = null;
         try {
         	dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
@@ -196,9 +193,9 @@ public class SocketClient {
         		tempLen += readLen;
 				dos.write(bytes, 0, readLen);
 			}
-        	logger.info("SocketClient write file length = " + tempLen);
+        	logger.info("client send file to server size is " + tempLen + " byte");
         } catch (IOException e) {
-        	logger.info("SocketClient object writeFile method has error", e);
+        	logger.info("SocketClient sendFileToServer has error", e);
         } finally {
         	try {
         		dis.close();
@@ -207,38 +204,6 @@ public class SocketClient {
         }
     }
 
-	/**
-	 * 从流中读取文件并将内容写到本地文件中
-	 * 
-	 * @param localFile
-	 */
-	public void saveFile(File localFile) {
-		if (localFile.exists()) {
-			localFile.delete();
-		}
-		if (!localFile.getParentFile().exists()) {
-			localFile.getParentFile().mkdirs();
-		}
-		FileOutputStream fos = null;
-		try {
-			// 从socket流中读取信息
-			fos = new FileOutputStream(localFile);
-			InputStream fis = socket.getInputStream();
-			byte[] fbyte = new byte[2048];
-			while (fis.read(fbyte) > 0) {
-				fos.write(fbyte, 0, fbyte.length);
-			}
-		} catch (Exception e) {
-			logger.error("SocketClient object saveFile method has error", e);
-		} finally {
-			try {
-				fos.close();
-				send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭 socket
-			} catch (Exception e2) {
-			}
-		}
-	}
-	
 	public InputStream getSocketInputStream() throws IOException {
 		return socket.getInputStream();
 	}

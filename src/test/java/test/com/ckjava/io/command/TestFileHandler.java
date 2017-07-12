@@ -11,12 +11,16 @@ import java.util.concurrent.Executors;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.SocketClient;
 import com.ckjava.io.command.SocketServer;
 import com.ckjava.io.command.constants.IOSigns;
 
 public class TestFileHandler {
+	
+	private static Logger logger = LoggerFactory.getLogger(TestFileHandler.class);
 
 	private static final int port = 19800;
 	private static ExecutorService executorservice = Executors.newFixedThreadPool(1);
@@ -38,10 +42,10 @@ public class TestFileHandler {
 	}
 
 	@Test
-	public void testReadFile() {
-		List<RunReadFileThread> threadList = new ArrayList<>();
+	public void testGetFileFromServer() {
+		List<GetFileFromServerThread> threadList = new ArrayList<>();
 		for (int i = 0; i < 1; i++) {
-			threadList.add(new RunReadFileThread());
+			threadList.add(new GetFileFromServerThread());
 		}
 		try {
 			executorservice.invokeAll(threadList);
@@ -51,10 +55,10 @@ public class TestFileHandler {
 	}
 	
 	@Test
-	public void testWriteFile() {
-		List<RunWriteFileThread> threadList = new ArrayList<>();
+	public void testSendFileToServer() {
+		List<SendFileToServerThread> threadList = new ArrayList<>();
 		for (int i = 0; i < 1; i++) {
-			threadList.add(new RunWriteFileThread());
+			threadList.add(new SendFileToServerThread());
 		}
 		try {
 			executorservice.invokeAll(threadList);
@@ -63,13 +67,13 @@ public class TestFileHandler {
 		}
 	}
 
-	public class RunReadFileThread implements Callable<String> {
+	public class GetFileFromServerThread implements Callable<String> {
 
 		@Override
 		public String call() throws Exception {
 			try {
 				
-				// read file from server
+				// get file from server
 				String remoteFile = TestFileHandler.class.getResource("/remote-file/testReadFile.txt").getPath();
 				
 				String localPath = TestFileHandler.class.getResource("/local-file/").getPath();
@@ -83,21 +87,17 @@ public class TestFileHandler {
 						String fileName = client.readUTFString();
 						Long fileSize = client.readLong();
 						String localFile = localPath + fileName;
-						String result = client.readFile(localFile, fileSize);
-						if (result == null) {
-							System.out.println("文件传输完毕, path = " + localFile + ", size = " + fileSize + " byte");
-							client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
-						} else {
-							System.err.println(result);
-						}
+						String result = client.getFileFromServer(localFile, fileSize);
+						logger.info(result);
+						client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
 					} else {
-						System.out.println(IOSigns.NOT_FOUND_FILE_SIGN);
+						logger.error(IOSigns.NOT_FOUND_FILE_SIGN);
 					}
 				} else {
-					System.out.println(IOSigns.NOT_FOUND_COMMAND);
+					logger.error(IOSigns.NOT_FOUND_COMMAND);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("GetFileFromServer has error", e);
 			}
 			
 			return null;
@@ -105,24 +105,25 @@ public class TestFileHandler {
 
 	}
 	
-	public class RunWriteFileThread implements Callable<String> {
+	public class SendFileToServerThread implements Callable<String> {
 
 		@Override
 		public String call() throws Exception {
 			try {
-				// write file to server
-				String localFilePath = TestFileHandler.class.getResource("/local-file/testLocalFile.txt").getPath();
+				// send file to server
+				String localFilePath = TestFileHandler.class.getResource("/local-file/verifycode.jpg").getPath();
 				String remoteFilePath = TestFileHandler.class.getResource("/remote-file/").getPath();
 				File localFile = new File(localFilePath);
 				
 				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
-				client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+", "+ localFile.getName() +", "+localFile.length()+"}");
+				client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+","+ localFile.getName() +","+localFile.length()+"}");
+				
 				String sign = client.readUTFString();
 				if (sign.equals(IOSigns.FOUND_COMMAND)) {
 					sign = client.readUTFString();
 					if (sign.equals(IOSigns.WRITE_FILE_SUCCESS)) {
 
-						client.writeFile(localFile);
+						client.sendFileToServer(localFile);
 						
 						sign = client.readUTFString();
 						if (sign.equals(IOSigns.FINISH_SIGN)) {

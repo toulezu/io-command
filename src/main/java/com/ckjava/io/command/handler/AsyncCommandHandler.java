@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ckjava.io.command.Connection;
+import com.ckjava.io.command.ServerConnection;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.utils.CommandUtils;
 
@@ -20,11 +20,11 @@ public class AsyncCommandHandler implements Runnable {
 	
 	private static Logger logger = LoggerFactory.getLogger(AsyncCommandHandler.class);
 	
-	private Connection connection;
+	private ServerConnection connection;
 	private String detail;
 	private String charset;
 	
-	public AsyncCommandHandler(Connection connection, String charset, String message) {
+	public AsyncCommandHandler(ServerConnection connection, String charset, String message) {
 		super();
 		this.connection = connection;
 		this.charset = charset;
@@ -34,7 +34,7 @@ public class AsyncCommandHandler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			CommandUtils.execTask(detail, charset, "start_robot", connection.getSocketOutputStream());
+			//CommandUtils.execTask(detail, charset, "start_robot", connection.getSocketOutputStream());
 			connection.writeUTFString(IOSigns.FINISH_RUN_ASYNC_COMMAND_SIGN);
 		} catch (IOException e) {
 			logger.error("AsyncCommandHandler execTask has error", e);

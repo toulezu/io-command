@@ -178,7 +178,7 @@ public class TestClient {
     				String fileName = client.readUTFString();
     				Long fileSize = client.readLong();
     				String localFile = path+fileName;
-    				String result = client.readFile(localFile, fileSize);
+    				String result = client.getFileFromServer(localFile, fileSize);
     				if (result == null) {
     					System.out.println("文件传输完毕, path = " + localFile + ", size = " + fileSize + " byte");
     				} else {

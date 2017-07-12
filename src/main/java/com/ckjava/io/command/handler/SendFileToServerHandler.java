@@ -2,11 +2,12 @@ package com.ckjava.io.command.handler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ckjava.io.command.Connection;
+import com.ckjava.io.command.ServerConnection;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.utils.ArrayUtils;
 
@@ -17,21 +18,21 @@ import com.ckjava.utils.ArrayUtils;
  *
  * 2017年4月11日-下午4:10:44
  */
-public class WriteFileHandler implements Runnable {
+public class SendFileToServerHandler implements Callable<String> {
 
 	private static Logger logger = LoggerFactory.getLogger(CommandHandler.class);
 	
-	private Connection connection;
+	private ServerConnection connection;
 	private String detail;
 	
-	public WriteFileHandler(Connection connection, String detail) {
+	public SendFileToServerHandler(ServerConnection connection, String detail) {
 		super();
 		this.connection = connection;
 		this.detail = detail;
 	}
 
 	@Override
-	public void run() {
+	public String call() {
 		String[] details = detail.split(",");
 		String filePath = ArrayUtils.getValue(details, 0);
 		String fileName = ArrayUtils.getValue(details, 1);
@@ -47,7 +48,8 @@ public class WriteFileHandler implements Runnable {
 			}
 			if (file.createNewFile()) {
 				connection.writeUTFString(IOSigns.WRITE_FILE_SUCCESS);
-				connection.readFile(file, Long.valueOf(fileLength));
+				String result = connection.getFileFromClient(file, Long.valueOf(fileLength));
+				logger.info(result);
 				connection.writeUTFString(IOSigns.FINISH_SIGN);
 			} else {
 				connection.writeUTFString(IOSigns.WRITE_FILE_FAIL);
@@ -56,6 +58,7 @@ public class WriteFileHandler implements Runnable {
 			logger.error("WriteFileHandler run has error", e);
 			connection.writeUTFString(IOSigns.ERROR_SIGN);
 		}
+		return null;
 	}
 
 }

@@ -39,7 +39,6 @@ try {
 
 ## TODO LIST
 
-- client 向 server 传文件
 - 支持SSL/TLS加密
 - 以插件的方式扩展Handler
 - 文件分段多线程传输

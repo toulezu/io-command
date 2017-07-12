@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.io.command.handler.AsyncCommandHandler;
 import com.ckjava.io.command.handler.CommandHandler;
-import com.ckjava.io.command.handler.ReadFileHandler;
-import com.ckjava.io.command.handler.WriteFileHandler;
+import com.ckjava.io.command.handler.GetFileFromServerHandler;
+import com.ckjava.io.command.handler.SendFileToServerHandler;
 import com.ckjava.io.command.thread.ThreadService;
 import com.ckjava.utils.StringUtils;
 
@@ -29,12 +30,12 @@ public class ConnectionThread implements Runnable {
 	private static final String COMMAND_REG = "(\\$\\{.*\\})";
 	
     private Socket socket;
-    private Connection connection;
+    private ServerConnection connection;
     private boolean isRunning;
 
     public ConnectionThread(Socket socket) {
         this.socket = socket;
-        connection = new Connection(socket);
+        connection = new ServerConnection(socket);
         isRunning = true;
     }
 
@@ -75,10 +76,11 @@ public class ConnectionThread implements Runnable {
     					ThreadService.getExecutorService().submit(new CommandHandler(connection, reader.readLine(), detail));
     					continue;
     				case IOSigns.READ_FILE_SIGN: // client read file from server
-    					ThreadService.getExecutorService().submit(new ReadFileHandler(connection, detail));
+    					ThreadService.getExecutorService().submit(new GetFileFromServerHandler(connection, detail));
     					continue;
     				case IOSigns.WRITE_FILE_SIGN: // client write file to server
-    					ThreadService.getExecutorService().submit(new WriteFileHandler(connection, detail));
+    					Future<?> result = ThreadService.getExecutorService().submit(new SendFileToServerHandler(connection, detail));
+    					result.get(); // call the thread stop until finish transfer the file
     					continue;
     				default:
     					continue;

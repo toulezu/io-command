@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ckjava.io.command.Connection;
+import com.ckjava.io.command.ServerConnection;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.utils.CommandUtils;
 
@@ -20,11 +20,11 @@ public class CommandHandler implements Runnable {
 	
 	private static Logger logger = LoggerFactory.getLogger(CommandHandler.class);
 	
-	private Connection connection;
+	private ServerConnection connection;
 	private String detail;
 	private String charset;
 	
-	public CommandHandler(Connection connection, String charset, String message) {
+	public CommandHandler(ServerConnection connection, String charset, String message) {
 		super();
 		this.connection = connection;
 		this.charset = charset;
