@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,21 @@ public class Connection {
      * @param message
      */
     public void writeUTFString(String message) {
+        try {
+        	DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        	dos.writeUTF(message);
+        	dos.flush();
+        } catch (IOException e) {
+        	logger.info("Connection object writeString method has error", e);
+        }
+    }
+    
+    /**
+     * 向socket中写入数据
+     * 
+     * @param message
+     */
+    public void writeBytes(String message) {
         try {
         	DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         	dos.writeUTF(message);
@@ -124,6 +140,11 @@ public class Connection {
 	
 	public InputStream getSocketInputStream() throws IOException {
 		return socket.getInputStream();
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(System.getProperty("file.encoding"));
+		System.out.println(Charset.defaultCharset());
 	}
     
 }
