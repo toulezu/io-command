@@ -39,7 +39,7 @@ public class TestCommandHandler {
 	@Test
 	public void testMultiInvoke() {
 		List<RunCommandThread> threadList = new ArrayList<>();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1; i++) {
 			threadList.add(new RunCommandThread());
 		}
 		try {
@@ -55,18 +55,14 @@ public class TestCommandHandler {
 		public String call() throws Exception {
 			try {
 				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
-				client.send(IOSigns.RUN_SYNC_COMMAND_SIGN).send("${cmd /C ipconfig}");
+				client.send(IOSigns.RUN_SYNC_COMMAND_SIGN).send("${cmd /C ipconfig}").setCharset("GBK");
 				String sign = client.readUTFString();
 				if (sign.equals(IOSigns.FOUND_COMMAND)) {
 					while (true) {
 						sign = client.readUTFString();
 						System.out.println(sign);
-						if (sign.contains("Successfully opened log file")) { // 表示需要输入Q来生成coverage.xml
-							client.send(IOSigns.WRITE_FILE_SIGN);
-							client.send("${start_robot}");
-
-						}
-						if (sign.equals(IOSigns.FINISH_RUN_SYNC_COMMAND_SIGN)) {
+						
+						if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
 							System.out.println(Thread.currentThread().getName() + " finish");
 							client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
 							break;

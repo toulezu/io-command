@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,22 @@ public class SocketClient {
 			writer.println(message);
 		} catch (IOException e) {
 			logger.error("SocketClient send method has error", e);
+		}
+		return this;
+	}
+	
+	/**
+	 * 设置服务器端执行命令后接收命令输出使用的编码
+	 * @param charset String
+	 * @return SocketClient
+	 */
+	public SocketClient setCharset(String charset) {
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+			writer.println(charset);
+		} catch (IOException e) {
+			logger.error("SocketClient setCharset method has error", e);
 		}
 		return this;
 	}
@@ -107,6 +124,13 @@ public class SocketClient {
 		}
 	}
 
+	/**
+	 * client read file from socket
+	 * 
+	 * @param savePath
+	 * @param fileSize
+	 * @return
+	 */
 	public String readFile(String savePath, Long fileSize) {
 		DataOutputStream fileOut = null;
 		try {
@@ -152,6 +176,36 @@ public class SocketClient {
 			}
 		}
 	}
+	
+	/**
+	 * client write file to socket
+	 * 
+	 * @param savePath
+	 * @param fileSize
+	 * @return
+	 */
+	public void writeFile(File file) {
+    	DataInputStream dis = null;
+        try {
+        	dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+        	DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        	byte[] bytes = new byte[2048];
+        	int tempLen = 0;
+        	int readLen = 0;
+        	while ((readLen = dis.read(bytes)) != -1) {
+        		tempLen += readLen;
+				dos.write(bytes, 0, readLen);
+			}
+        	logger.info("SocketClient write file length = " + tempLen);
+        } catch (IOException e) {
+        	logger.info("SocketClient object writeFile method has error", e);
+        } finally {
+        	try {
+        		dis.close();
+			} catch (Exception e2) {
+			}
+        }
+    }
 
 	/**
 	 * 从流中读取文件并将内容写到本地文件中

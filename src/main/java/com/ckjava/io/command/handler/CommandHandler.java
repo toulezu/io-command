@@ -22,20 +22,22 @@ public class CommandHandler implements Runnable {
 	
 	private Connection connection;
 	private String detail;
+	private String charset;
 	
-	public CommandHandler(Connection connection, String message) {
+	public CommandHandler(Connection connection, String charset, String message) {
 		super();
 		this.connection = connection;
+		this.charset = charset;
 		this.detail = message;
 	}
 
 	@Override
 	public void run() {
 		try {
-			CommandUtils.execTask(detail, connection.getSocketOutputStream());
-			connection.writeUTFString(IOSigns.FINISH_RUN_SYNC_COMMAND_SIGN);
+			CommandUtils.execTask(detail, charset, connection.getSocketOutputStream());
+			connection.writeUTFString(IOSigns.FINISH_RUN_COMMAND_SIGN);
 		} catch (IOException e) {
-			logger.error("SyncCommandHandler execTask has error", e);
+			logger.error("CommandHandler run has error", e);
 		}
 	}
 

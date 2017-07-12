@@ -22,17 +22,19 @@ public class AsyncCommandHandler implements Runnable {
 	
 	private Connection connection;
 	private String detail;
+	private String charset;
 	
-	public AsyncCommandHandler(Connection connection, String message) {
+	public AsyncCommandHandler(Connection connection, String charset, String message) {
 		super();
 		this.connection = connection;
+		this.charset = charset;
 		this.detail = message;
 	}
 
 	@Override
 	public void run() {
 		try {
-			CommandUtils.execTask(detail, "start_robot", connection.getSocketOutputStream());
+			CommandUtils.execTask(detail, charset, "start_robot", connection.getSocketOutputStream());
 			connection.writeUTFString(IOSigns.FINISH_RUN_ASYNC_COMMAND_SIGN);
 		} catch (IOException e) {
 			logger.error("AsyncCommandHandler execTask has error", e);

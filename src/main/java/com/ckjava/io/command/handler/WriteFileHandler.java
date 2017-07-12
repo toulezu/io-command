@@ -2,12 +2,13 @@ package com.ckjava.io.command.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.ckjava.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ckjava.io.command.Connection;
 import com.ckjava.io.command.constants.IOSigns;
+import com.ckjava.utils.ArrayUtils;
 
 /**
  * 写文件
@@ -16,35 +17,44 @@ import com.ckjava.io.command.constants.IOSigns;
  *
  * 2017年4月11日-下午4:10:44
  */
-public class WriteFileHandler implements FileHandler {
+public class WriteFileHandler implements Runnable {
 
-	private static final String COMMAND_REG = "(\\$\\{.*\\})";
+	private static Logger logger = LoggerFactory.getLogger(CommandHandler.class);
+	
+	private Connection connection;
+	private String detail;
+	
+	public WriteFileHandler(Connection connection, String detail) {
+		super();
+		this.connection = connection;
+		this.detail = detail;
+	}
 
 	@Override
-	public void onReceive(Connection connection, String fileName, String message) {
-		if (StringUtils.isNotBlank(message) && message.contains("${") && message.contains("}")) {
-			Pattern pattern = Pattern.compile(COMMAND_REG);
-			Matcher matcher = pattern.matcher(message);
-			if (matcher.find() && matcher.groupCount() == 1) {
-				connection.writeUTFString(IOSigns.FOUND_COMMAND);
-				
-				String matcherStr = matcher.group(1); // 获取匹配的数字，从1开始
-				String filePath = matcherStr.replaceAll("\\$\\{", "").replaceAll("\\}", "");
-				
-				File file = new File(filePath);
-				try {
-					file.createNewFile();
-					System.out.println("WriteFileHandler:" + file.getAbsolutePath());
-					connection.writeUTFString(IOSigns.FINISH_WRITE_FILE_SIGN);
-				} catch (IOException e) {
-					connection.writeUTFString(IOSigns.ERROR_SIGN);
-				}
-				
-			} else {
-				connection.writeUTFString(IOSigns.NOT_FOUND_COMMAND);
+	public void run() {
+		String[] details = detail.split(",");
+		String filePath = ArrayUtils.getValue(details, 0);
+		String fileName = ArrayUtils.getValue(details, 1);
+		String fileLength = ArrayUtils.getValue(details, 2);
+		
+		File file = new File(filePath+"/"+fileName);
+		try {
+			if (file.exists()) {
+				file.delete();
 			}
-		} else {
-			connection.writeUTFString(IOSigns.NOT_FOUND_COMMAND);
+			if (!file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
+			if (file.createNewFile()) {
+				connection.writeUTFString(IOSigns.WRITE_FILE_SUCCESS);
+				connection.readFile(file, Long.valueOf(fileLength));
+				connection.writeUTFString(IOSigns.FINISH_SIGN);
+			} else {
+				connection.writeUTFString(IOSigns.WRITE_FILE_FAIL);
+			}
+		} catch (IOException e) {
+			logger.error("WriteFileHandler run has error", e);
+			connection.writeUTFString(IOSigns.ERROR_SIGN);
 		}
 	}
 

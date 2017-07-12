@@ -69,16 +69,16 @@ public class ConnectionThread implements Runnable {
                 		logger.info("client want server close, server close socket");
     					break;
     				case IOSigns.RUN_ASYNC_COMMAND_SIGN: // 执行异步命令
-    					ThreadService.getExecutorService().submit(new AsyncCommandHandler(connection, detail));
+    					ThreadService.getExecutorService().submit(new AsyncCommandHandler(connection, reader.readLine(), detail));
     					continue;
     				case IOSigns.RUN_SYNC_COMMAND_SIGN:
-    					ThreadService.getExecutorService().submit(new CommandHandler(connection, detail));
+    					ThreadService.getExecutorService().submit(new CommandHandler(connection, reader.readLine(), detail));
     					continue;
-    				case IOSigns.READ_FILE_SIGN: // 读取文件
+    				case IOSigns.READ_FILE_SIGN: // client read file from server
     					ThreadService.getExecutorService().submit(new ReadFileHandler(connection, detail));
     					continue;
-    				case IOSigns.WRITE_FILE_SIGN: // 写文件
-    					new WriteFileHandler().onReceive(connection, "", detail);
+    				case IOSigns.WRITE_FILE_SIGN: // client write file to server
+    					ThreadService.getExecutorService().submit(new WriteFileHandler(connection, detail));
     					continue;
     				default:
     					continue;

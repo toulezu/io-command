@@ -1,10 +1,12 @@
 package com.ckjava.io.command;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -114,7 +116,59 @@ public class Connection {
 			}
         }
     }
-
+    
+    /**
+     * 从 socket 输入流中读取文件数据
+     * 
+     * @param filePath
+     */
+    public String readFile(File savePath, Long fileSize) {
+		DataOutputStream fileOut = null;
+		try {
+			fileOut = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(savePath)));
+			DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+			
+			byte[] bytes = new byte[2048];
+			int tempSumLen = 0;
+			int readLen = 0;
+			
+			logger.info("remote file size is " + fileSize +" byte");
+			long firstTime = System.currentTimeMillis();
+			while ((readLen = dis.read(bytes)) != -1) {
+				tempSumLen += readLen;
+				
+				long nowTime = System.currentTimeMillis();
+				if (nowTime - firstTime >= 1000) {
+					System.out.printf("\r%8s:\t%4s%%", "receive size", (tempSumLen/fileSize)*100);
+					firstTime = nowTime;
+				}
+				
+				fileOut.write(bytes, 0, readLen);
+				
+				if (tempSumLen == fileSize) { // 必须通过判断读取的字节数和文件字节数是否相等来退出循环,因为当前的 socket 没有关闭,dis.read 会卡死在这里
+					break;
+				}
+			}
+			
+			System.out.println("finish transaction file");
+			
+			if (tempSumLen != fileSize) {
+				return "file size is " + fileSize + ", total read size is " + tempSumLen;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error("Connection readFile method has error", e);
+			return "Connection readFile method has error";
+		} finally {
+			try {
+				fileOut.close();
+			} catch (Exception e2) {
+			}
+		}
+	}
+    
+    
     /**
      * 向socket中写入数据
      * 

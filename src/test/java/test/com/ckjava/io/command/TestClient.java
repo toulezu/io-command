@@ -66,7 +66,7 @@ public class TestClient {
     				if (sign.contains(site_name)) { // 说明存在和网站名一样的应用池
     					isExistPool = true;
     				}
-    				if (sign.equals(IOSigns.FINISH_RUN_SYNC_COMMAND_SIGN)) {
+    				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
     					System.out.println("列出所有的应用池成功");
     					break;
     				}
@@ -80,7 +80,7 @@ public class TestClient {
         			while (true) {
         				sign = client.readUTFString();
         				System.out.println(sign);
-        				if (sign.equals(IOSigns.FINISH_RUN_SYNC_COMMAND_SIGN)) {
+        				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
         					System.out.println("新增应用池成功");
         					break;
         				}
@@ -96,7 +96,7 @@ public class TestClient {
     			while (true) {
     				sign = client.readUTFString();
     				System.out.println(sign);
-    				if (sign.equals(IOSigns.FINISH_RUN_SYNC_COMMAND_SIGN)) {
+    				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
     					System.out.println("将应用对应的应用池修改成和网站名一样的应用池成功");
     					break;
     				}
@@ -111,7 +111,7 @@ public class TestClient {
 				while (true) {
     				sign = client.readUTFString();
     				System.out.println(sign);
-    				if (sign.equals(IOSigns.FINISH_RUN_SYNC_COMMAND_SIGN)) {
+    				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
     					System.out.println("完成发现并杀死  OpenCover.Console.exe, w3wp.exe 进程");
     					break;
     				}
@@ -161,7 +161,7 @@ public class TestClient {
     			while (true) {
     				sign = client.readUTFString();
     				System.out.println(sign);
-    				if (sign.equals(IOSigns.FINISH_RUN_SYNC_COMMAND_SIGN)) {
+    				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
     					System.out.println("完成将coverage.xml转成html报告");
     					break;
     				}
@@ -195,7 +195,7 @@ public class TestClient {
     			while (true) {
     				sign = client.readUTFString();
     				System.out.println(sign);
-    				if (sign.equals(IOSigns.FINISH_RUN_SYNC_COMMAND_SIGN)) {
+    				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
     					System.out.println("将应用对应的应用池修改成和网站名一样的应用池成功");
     					break;
     				}
@@ -257,12 +257,12 @@ public class TestClient {
 		String[] killProcess = {"python.exe", "TaobaoProtect.exe"};
 		StringBuffer tasks = new StringBuffer();
 		StringBuffer killResult = new StringBuffer();
-		CommandUtils.execTask("cmd.exe /C tasklist", tasks);
+		CommandUtils.execTask("cmd.exe /C tasklist", "GBK", tasks);
 		String[] taskArr = tasks.toString().split("\n");
 		for (String taskname : taskArr) {
 			for (String tokill : killProcess) {
 				if (taskname.contains(tokill)) {
-					CommandUtils.execTask("cmd.exe /C taskkill /F /im "+tokill, killResult);
+					CommandUtils.execTask("cmd.exe /C taskkill /F /im "+tokill, "GBK", killResult);
 					System.out.println(taskname);
 				}
 			}
@@ -302,7 +302,7 @@ public class TestClient {
 				String sign = client.readUTFString();
 				if (sign.equals(IOSigns.FOUND_COMMAND)) {
 					sign = client.readUTFString();
-					if (sign.equals(IOSigns.FINISH_WRITE_FILE_SIGN)) {
+					if (sign.equals(IOSigns.WRITE_FILE_SUCCESS)) {
 						System.out.println("robot push Q");
 						break;
 					}

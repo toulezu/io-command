@@ -1,5 +1,6 @@
 package test.com.ckjava.io.command;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +38,23 @@ public class TestFileHandler {
 	}
 
 	@Test
-	public void testMultiInvoke() {
-		List<RunFileThread> threadList = new ArrayList<>();
+	public void testReadFile() {
+		List<RunReadFileThread> threadList = new ArrayList<>();
 		for (int i = 0; i < 1; i++) {
-			threadList.add(new RunFileThread());
+			threadList.add(new RunReadFileThread());
+		}
+		try {
+			executorservice.invokeAll(threadList);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testWriteFile() {
+		List<RunWriteFileThread> threadList = new ArrayList<>();
+		for (int i = 0; i < 1; i++) {
+			threadList.add(new RunWriteFileThread());
 		}
 		try {
 			executorservice.invokeAll(threadList);
@@ -49,17 +63,19 @@ public class TestFileHandler {
 		}
 	}
 
-	public class RunFileThread implements Callable<String> {
+	public class RunReadFileThread implements Callable<String> {
 
 		@Override
 		public String call() throws Exception {
 			try {
+				
+				// read file from server
 				String remoteFile = TestFileHandler.class.getResource("/remote-file/testReadFile.txt").getPath();
 				
 				String localPath = TestFileHandler.class.getResource("/local-file/").getPath();
+				
 				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
-				client.send(IOSigns.READ_FILE_SIGN);
-				client.send("${"+remoteFile+"}");
+				client.send(IOSigns.READ_FILE_SIGN).send("${"+remoteFile+"}");
 				String sign = client.readUTFString();
 				if (sign.equals(IOSigns.FOUND_COMMAND)) {
 					sign = client.readUTFString();
@@ -83,9 +99,48 @@ public class TestFileHandler {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
 			return null;
 		}
 
+	}
+	
+	public class RunWriteFileThread implements Callable<String> {
+
+		@Override
+		public String call() throws Exception {
+			try {
+				// write file to server
+				String localFilePath = TestFileHandler.class.getResource("/local-file/testLocalFile.txt").getPath();
+				String remoteFilePath = TestFileHandler.class.getResource("/remote-file/").getPath();
+				File localFile = new File(localFilePath);
+				
+				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
+				client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+", "+ localFile.getName() +", "+localFile.length()+"}");
+				String sign = client.readUTFString();
+				if (sign.equals(IOSigns.FOUND_COMMAND)) {
+					sign = client.readUTFString();
+					if (sign.equals(IOSigns.WRITE_FILE_SUCCESS)) {
+
+						client.writeFile(localFile);
+						
+						sign = client.readUTFString();
+						if (sign.equals(IOSigns.FINISH_SIGN)) {
+							client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭	
+						} else {
+							System.out.println(sign);
+						}
+					} else {
+						System.out.println(IOSigns.WRITE_FILE_FAIL);
+					}
+				} else {
+					System.out.println(IOSigns.NOT_FOUND_COMMAND);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 
 }
