@@ -1,4 +1,4 @@
-package com.ckjava.io.command;
+package com.ckjava.io.command.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.constants.IOSigns;
-import com.ckjava.io.command.handler.AsyncCommandHandler;
 import com.ckjava.io.command.handler.CommandHandler;
 import com.ckjava.io.command.handler.GetFileFromServerHandler;
 import com.ckjava.io.command.handler.SendFileToServerHandler;
@@ -69,10 +68,7 @@ public class ConnectionThread implements Runnable {
     					isRunning = false;
                 		logger.info("client want server close, server close socket");
     					break;
-    				case IOSigns.RUN_ASYNC_COMMAND_SIGN: // 执行异步命令
-    					ThreadService.getExecutorService().submit(new AsyncCommandHandler(connection, reader.readLine(), detail));
-    					continue;
-    				case IOSigns.RUN_SYNC_COMMAND_SIGN:
+    				case IOSigns.RUN_COMMAND_SIGN:
     					ThreadService.getExecutorService().submit(new CommandHandler(connection, reader.readLine(), detail));
     					continue;
     				case IOSigns.READ_FILE_SIGN: // client read file from server

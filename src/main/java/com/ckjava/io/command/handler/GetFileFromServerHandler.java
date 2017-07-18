@@ -2,8 +2,8 @@ package com.ckjava.io.command.handler;
 
 import java.io.File;
 
-import com.ckjava.io.command.ServerConnection;
 import com.ckjava.io.command.constants.IOSigns;
+import com.ckjava.io.command.server.ServerConnection;
 
 /**
  * 读取文件

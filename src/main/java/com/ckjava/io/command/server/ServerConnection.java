@@ -1,4 +1,4 @@
-package com.ckjava.io.command;
+package com.ckjava.io.command.server;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

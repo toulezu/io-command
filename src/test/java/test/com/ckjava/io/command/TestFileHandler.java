@@ -14,9 +14,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ckjava.io.command.SocketClient;
-import com.ckjava.io.command.SocketServer;
+import com.ckjava.io.command.client.SocketClient;
 import com.ckjava.io.command.constants.IOSigns;
+import com.ckjava.io.command.server.SocketServer;
 
 public class TestFileHandler {
 	

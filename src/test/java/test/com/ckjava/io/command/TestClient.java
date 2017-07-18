@@ -13,7 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.ckjava.io.command.SocketClient;
+import com.ckjava.io.command.client.SocketClient;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.utils.CommandUtils;
 
@@ -55,7 +55,7 @@ public class TestClient {
 			SocketClient client = new SocketClient(InetAddress.getByName(host), 8083);
 			
 			// 应用环境配置
-			client.send(IOSigns.RUN_SYNC_COMMAND_SIGN);
+			client.send(IOSigns.RUN_COMMAND_SIGN);
 			client.send("${C:\\Windows\\System32\\inetsrv\\appcmd.exe list apppool}");
 			String sign = client.readUTFString();
 			boolean isExistPool = false;
@@ -73,7 +73,7 @@ public class TestClient {
 				}
     		}
     		if (!isExistPool) { // 新增应用池
-    			client.send(IOSigns.RUN_SYNC_COMMAND_SIGN);
+    			client.send(IOSigns.RUN_COMMAND_SIGN);
     			client.send("${C:\\Windows\\System32\\inetsrv\\appcmd.exe add apppool /name:\""+site_name+"\"}");
     			sign = client.readUTFString();
         		if (sign.equals(IOSigns.FOUND_COMMAND)) {
@@ -89,7 +89,7 @@ public class TestClient {
     		}
     		
     		// 将应用对应的应用池修改成和网站名一样的应用池
-    		client.send(IOSigns.RUN_SYNC_COMMAND_SIGN);
+    		client.send(IOSigns.RUN_COMMAND_SIGN);
 			client.send("${C:\\Windows\\System32\\inetsrv\\appcmd.exe set app \""+physic_path+"\" /applicationpool:\""+site_name+"\"}");
 			sign = client.readUTFString();
     		if (sign.equals(IOSigns.FOUND_COMMAND)) {
@@ -104,7 +104,7 @@ public class TestClient {
     		}
 			
 			// 1,发现并杀死  OpenCover.Console.exe, w3wp.exe 进程
-			client.send(IOSigns.RUN_SYNC_COMMAND_SIGN);
+			client.send(IOSigns.RUN_COMMAND_SIGN);
 			client.send("${"+command_stop_iis_opencover+"}");
 			sign = client.readUTFString();
 			if (sign.equals(IOSigns.FOUND_COMMAND)) {
@@ -119,7 +119,7 @@ public class TestClient {
 			}
 			
 			// 2.生成coverage.xml
-			client.send(IOSigns.RUN_ASYNC_COMMAND_SIGN);
+			client.send(IOSigns.RUN_COMMAND_SIGN);
 			client.send("${"+command_use_opencover_start_iis+"}");
 			sign = client.readUTFString();
     		if (sign.equals(IOSigns.FOUND_COMMAND)) {
@@ -154,7 +154,7 @@ public class TestClient {
     		}
     		
     		// 3.将coverage.xml转成html报告
-    		client.send(IOSigns.RUN_SYNC_COMMAND_SIGN);
+    		client.send(IOSigns.RUN_COMMAND_SIGN);
 			client.send("${"+command_convert_opencover_xml_2_html+"}");
 			sign = client.readUTFString();
     		if (sign.equals(IOSigns.FOUND_COMMAND)) {
@@ -188,7 +188,7 @@ public class TestClient {
     		}
     		
     		// 将应用对应的应用池恢复到原来的样子
-    		client.send(IOSigns.RUN_SYNC_COMMAND_SIGN);
+    		client.send(IOSigns.RUN_COMMAND_SIGN);
 			client.send("${C:\\Windows\\System32\\inetsrv\\appcmd.exe set app \""+physic_path+"\" /applicationpool:\""+app_pool_name+"\"}");
 			sign = client.readUTFString();
     		if (sign.equals(IOSigns.FOUND_COMMAND)) {
@@ -252,24 +252,6 @@ public class TestClient {
 		}
 	}
 
-	//@Test
-	public void findAndCloseProcess() {
-		String[] killProcess = {"python.exe", "TaobaoProtect.exe"};
-		StringBuffer tasks = new StringBuffer();
-		StringBuffer killResult = new StringBuffer();
-		CommandUtils.execTask("cmd.exe /C tasklist", "GBK", tasks);
-		String[] taskArr = tasks.toString().split("\n");
-		for (String taskname : taskArr) {
-			for (String tokill : killProcess) {
-				if (taskname.contains(tokill)) {
-					CommandUtils.execTask("cmd.exe /C taskkill /F /im "+tokill, "GBK", killResult);
-					System.out.println(taskname);
-				}
-			}
-		}
-		System.out.println(killResult.toString());
-	}
-	
 	public static class ExecuteAPIThread implements Runnable {
 
 		@Override

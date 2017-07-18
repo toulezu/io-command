@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ckjava.io.command.ServerConnection;
 import com.ckjava.io.command.constants.IOSigns;
+import com.ckjava.io.command.server.ServerConnection;
 import com.ckjava.utils.CommandUtils;
 
 /**

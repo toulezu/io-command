@@ -1,4 +1,4 @@
-package com.ckjava.io.command;
+package com.ckjava.io.command.client;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -20,6 +20,7 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ckjava.io.command.Wait;
 import com.ckjava.io.command.constants.IOSigns;
 
 public class SocketClient {

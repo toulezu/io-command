@@ -11,9 +11,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ckjava.io.command.SocketClient;
-import com.ckjava.io.command.SocketServer;
+import com.ckjava.io.command.client.SocketClient;
 import com.ckjava.io.command.constants.IOSigns;
+import com.ckjava.io.command.server.SocketServer;
+import com.ckjava.utils.OSUtils;
 
 public class TestCommandHandler {
 
@@ -55,7 +56,12 @@ public class TestCommandHandler {
 		public String call() throws Exception {
 			try {
 				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
-				client.send(IOSigns.RUN_SYNC_COMMAND_SIGN).send("${cmd /C ipconfig}").setCharset("GBK");
+				String osType = OSUtils.getCurrentOSType();
+				String command = "ifconfig";
+				if (osType.equals(OSUtils.WINDOWS)) {
+					command = "ipconfig";
+				}
+				client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").setCharset("GBK");
 				String sign = client.readUTFString();
 				if (sign.equals(IOSigns.FOUND_COMMAND)) {
 					while (true) {
