@@ -48,22 +48,6 @@ public class SocketClient {
 		return this;
 	}
 	
-	/**
-	 * 设置服务器端执行命令后接收命令输出使用的编码
-	 * @param charset String
-	 * @return SocketClient
-	 */
-	public SocketClient setCharset(String charset) {
-		PrintWriter writer = null;
-		try {
-			writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-			writer.println(charset);
-		} catch (IOException e) {
-			logger.error("SocketClient setCharset method has error", e);
-		}
-		return this;
-	}
-	
 	public void waitRead(final InputStream dis) throws IOException {
 		try {
 			new Wait() {

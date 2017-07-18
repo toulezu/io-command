@@ -69,7 +69,7 @@ public class ConnectionThread implements Runnable {
                 		logger.info("client want server close, server close socket");
     					break;
     				case IOSigns.RUN_COMMAND_SIGN:
-    					ThreadService.getExecutorService().submit(new CommandHandler(connection, reader.readLine(), detail));
+    					ThreadService.getExecutorService().submit(new CommandHandler(connection, detail));
     					continue;
     				case IOSigns.READ_FILE_SIGN: // client read file from server
     					ThreadService.getExecutorService().submit(new GetFileFromServerHandler(connection, detail));

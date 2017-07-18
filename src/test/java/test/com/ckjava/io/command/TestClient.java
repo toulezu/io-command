@@ -15,7 +15,6 @@ import org.jsoup.select.Elements;
 
 import com.ckjava.io.command.client.SocketClient;
 import com.ckjava.io.command.constants.IOSigns;
-import com.ckjava.utils.CommandUtils;
 
 /**
  * client 必须从 socket中读取信息,否则 getInputStream 会将本地缓冲区写满导致程序异常

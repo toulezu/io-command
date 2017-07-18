@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.io.command.server.ServerConnection;
+import com.ckjava.utils.ArrayUtils;
 import com.ckjava.utils.CommandUtils;
 
 /**
@@ -20,20 +21,26 @@ public class CommandHandler implements Runnable {
 	
 	private static Logger logger = LoggerFactory.getLogger(CommandHandler.class);
 	
+	private static final String SEMICOLON = ";";
+	private static final String EQUALS = "=";
+	
 	private ServerConnection connection;
 	private String detail;
-	private String charset;
 	
-	public CommandHandler(ServerConnection connection, String charset, String message) {
+	public CommandHandler(ServerConnection connection, String detail) {
 		super();
 		this.connection = connection;
-		this.charset = charset;
-		this.detail = message;
+		this.detail = detail;
 	}
 
 	@Override
 	public void run() {
 		try {
+			String[] details = detail.split(SEMICOLON);
+			String detail = ArrayUtils.getValue(details, 0);
+			String[] charsets = ArrayUtils.getValue(details, 1).split(EQUALS);
+			String charset = ArrayUtils.getValue(charsets, 1);
+			
 			CommandUtils.execTask(detail, charset, connection.getSocketOutputStream());
 			connection.writeUTFString(IOSigns.FINISH_RUN_COMMAND_SIGN);
 		} catch (IOException e) {

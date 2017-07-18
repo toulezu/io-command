@@ -61,7 +61,9 @@ public class TestCommandHandler {
 				if (osType.equals(OSUtils.WINDOWS)) {
 					command = "ipconfig";
 				}
-				client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").setCharset("GBK");
+				command = command.concat(";charset=GBK");
+				
+				client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}");
 				String sign = client.readUTFString();
 				if (sign.equals(IOSigns.FOUND_COMMAND)) {
 					while (true) {
