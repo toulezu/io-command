@@ -25,11 +25,6 @@ public class TestCommandHandler {
 	public static void startServer() {
 		new SocketServer(port);
 		System.out.println("Server starts, port is " + port);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	@AfterClass
@@ -63,22 +58,8 @@ public class TestCommandHandler {
 				}
 				command = command.concat(";charset=GBK");
 				
-				client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}");
-				String sign = client.readUTFString();
-				if (sign.equals(IOSigns.FOUND_COMMAND)) {
-					while (true) {
-						sign = client.readUTFString();
-						System.out.println(sign);
-						
-						if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
-							System.out.println(Thread.currentThread().getName() + " finish");
-							client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
-							break;
-						}
-					}
-				} else {
-					System.out.println(IOSigns.NOT_FOUND_COMMAND);
-				}
+				String result = client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").getRunCommandResult(client);
+				System.out.println(result);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

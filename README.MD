@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/toulezu/io-command.svg?branch=master)](https://travis-ci.org/toulezu/io-command)
 
-# 远程在服务器端执行命令的小工具
+# 基于 Java Socket 技术实现的客户端与服务器端交互的中间件
 
 ## 简单说明
 
@@ -8,32 +8,66 @@
 
 - 每启动一个 SocketClient 服务器端会启动一个 ConnectionThread 进行处理
 
-- 在 SocketClient 中通过 `send("${command}")` 发送命令, 通过 `getResult("GBK")` 获取命令的输出结果, 命令执行完毕后自动关闭 socket 连接
+## 基本功能
 
-## 服务器端使用
+- 服务器端启动
 
-- 启动如下命令即可
-
-```
-java -jar io-command.jar -p 8083
+```java
+new SocketServer(19800);
 ```
 
-- 也可以通过如下方式启动
-
-```
-new SocketServer(8083, new CommandHandler());
-```
-
-## 客户端使用
+### 客户端在服务器端执行命令
 
 ```java
 try {
-	SocketClient client = new SocketClient(InetAddress.getByName("192.168.2.149"), 8083);
-	client.send("${ipconfig}");
-	String result = client.getResult("GBK");
+	SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
+	String osType = OSUtils.getCurrentOSType();
+	String command = "ifconfig";
+	if (osType.equals(OSUtils.WINDOWS)) {
+		command = "ipconfig";
+	}
+	command = command.concat(";charset=GBK");
+	
+	String result = client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").getRunCommandResult(client);
 	System.out.println(result);
-} catch (UnknownHostException e) {
+} catch (Exception e) {
 	e.printStackTrace();
+}
+```
+
+### 客户端向服务器端传输文件
+
+```java
+try {
+	// send file to server
+	String localFilePath = TestFileHandler.class.getResource("/local-file/verifycode.jpg").getPath();
+	String remoteFilePath = TestFileHandler.class.getResource("/remote-file/").getPath();
+	File localFile = new File(localFilePath);
+	
+	SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
+	String result = client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+","+ localFile.getName() +","+localFile.length()+"}").getSendFileToServerResult(client, localFile);
+	
+	System.out.println(result);
+} catch (Exception e) {
+	e.printStackTrace();
+}
+```
+
+### 客户端获取服务器端文件
+
+```java
+try {
+	// get file from server
+	String remoteFile = TestFileHandler.class.getResource("/remote-file/testReadFile.txt").getPath();
+	
+	String localPath = TestFileHandler.class.getResource("/local-file/").getPath();
+	
+	SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
+	String result = client.send(IOSigns.READ_FILE_SIGN).send("${"+remoteFile+"}").getGetFileFromServerResult(client, localPath);
+	
+	System.out.println(result);
+} catch (Exception e) {
+	logger.error("GetFileFromServer has error", e);
 }
 ```
 

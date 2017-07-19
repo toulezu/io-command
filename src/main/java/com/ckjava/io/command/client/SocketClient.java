@@ -22,10 +22,13 @@ import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.Wait;
 import com.ckjava.io.command.constants.IOSigns;
+import com.ckjava.utils.StringUtils;
 
 public class SocketClient {
 
 	private static Logger logger = LoggerFactory.getLogger(SocketClient.class);
+	
+	private static final long TIMEOUT = 50000l;
 
 	private Socket socket;
 
@@ -35,6 +38,93 @@ public class SocketClient {
 		} catch (IOException e) {
 			logger.error("init SocketClient has error", e);
 		}
+	}
+	
+	/**
+	 * 获取命令的执行结果
+	 * 
+	 * @param client SocketClient
+	 * @return String
+	 */
+	public String getRunCommandResult(SocketClient client) {
+		StringBuilder result = new StringBuilder();
+		
+		String sign = client.readUTFString();
+		if (sign.equals(IOSigns.FOUND_COMMAND)) {
+			while (true) {
+				sign = client.readUTFString();
+				logger.info(sign);
+				
+				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
+					client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
+					break;
+				} else {
+					result.append(sign).append(StringUtils.LF);	
+				}
+			}
+		} else {
+			logger.info(IOSigns.NOT_FOUND_COMMAND);
+		}
+		return result.toString();
+	}
+	
+	/**
+	 * 
+	 * @param client
+	 * @param localPath
+	 * @return
+	 */
+	public String getGetFileFromServerResult(SocketClient client, String localPath) {
+		StringBuilder result = new StringBuilder();
+		
+		String sign = client.readUTFString();
+		if (sign.equals(IOSigns.FOUND_COMMAND)) {
+			sign = client.readUTFString();
+			if (sign.equals(IOSigns.FOUND_FILE_SIGN)) {
+				String fileName = client.readUTFString();
+				Long fileSize = client.readLong();
+				String localFile = localPath + fileName;
+				
+				String saveResult = client.getFileFromServer(localFile, fileSize);
+				result.append(saveResult);
+				
+				logger.info(saveResult);
+				client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
+			} else {
+				logger.error(IOSigns.NOT_FOUND_FILE_SIGN);
+			}
+		} else {
+			logger.error(IOSigns.NOT_FOUND_COMMAND);
+		}
+		return result.toString();
+	}
+	
+	public String getSendFileToServerResult(SocketClient client, File localFile) {
+		StringBuilder result = new StringBuilder();
+		
+		String sign = client.readUTFString();
+		if (sign.equals(IOSigns.FOUND_COMMAND)) {
+			sign = client.readUTFString();
+			if (sign.equals(IOSigns.WRITE_FILE_SUCCESS)) {
+
+				client.sendFileToServer(localFile);
+				
+				sign = client.readUTFString();
+				logger.info(sign);
+				
+				if (sign.equals(IOSigns.FINISH_SIGN)) {
+					client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭	
+				} else {
+					result.append(sign).append(StringUtils.LF);
+				}
+			} else {
+				logger.info(IOSigns.WRITE_FILE_FAIL);
+			}
+		} else {
+			logger.info(IOSigns.NOT_FOUND_COMMAND);
+		}
+		
+		return result.toString();
 	}
 
 	public SocketClient send(String message) {
@@ -48,6 +138,12 @@ public class SocketClient {
 		return this;
 	}
 	
+	/**
+	 * cause current thread to wait until InputStream has data
+	 * 
+	 * @param dis InputStream from socket
+	 * @throws IOException
+	 */
 	public void waitRead(final InputStream dis) throws IOException {
 		try {
 			new Wait() {
@@ -55,7 +151,7 @@ public class SocketClient {
 				public boolean until() throws IOException  {
 					return dis.available() > 0;
 				}
-			}.wait("SocketClient waitRead(InputStream) has error", 500000);
+			}.wait("SocketClient waitRead(InputStream) has error", TIMEOUT);
 		} catch (Exception e) {
 			throw new RuntimeException("SocketClient waitRead(InputStream) has error", e);
 		}
@@ -73,7 +169,6 @@ public class SocketClient {
 			throw new RuntimeException("SocketClient waitRead(Reader) has error", e);
 		}
 	}
-
 
 	public String readUTFString() {
 		try {
@@ -191,40 +286,6 @@ public class SocketClient {
 
 	public InputStream getSocketInputStream() throws IOException {
 		return socket.getInputStream();
-	}
-
-	/**
-	 * 获取命令的输出结果
-	 * 
-	 * @param charsetName
-	 *            服务器端编码
-	 * @return String 命令的输出结果
-	 */
-	public String getResult(String charsetName) {
-		StringBuilder runResult = new StringBuilder();
-		BufferedReader reader = null;
-		String tempStr = null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), charsetName));
-			while ((tempStr = reader.readLine()) != null) {
-				if (tempStr.equals(IOSigns.FINISH_SIGN)) {
-					send(IOSigns.CLOSE_SERVER_SIGN); // 通知服务器端关闭 socket
-					closeMe(); // 关闭客户端 socket
-					break;
-				} else {
-					runResult.append(tempStr).append("\n");
-				}
-			}
-			return runResult.toString();
-		} catch (IOException e) {
-			logger.error("SocketClient getResult method has error", e);
-			return runResult.toString();
-		} finally {
-			try {
-				reader.close();
-			} catch (Exception e2) {
-			}
-		}
 	}
 
 	public SocketClient closeMe() {

@@ -72,34 +72,18 @@ public class TestFileHandler {
 		@Override
 		public String call() throws Exception {
 			try {
-				
 				// get file from server
 				String remoteFile = TestFileHandler.class.getResource("/remote-file/testReadFile.txt").getPath();
 				
 				String localPath = TestFileHandler.class.getResource("/local-file/").getPath();
 				
 				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
-				client.send(IOSigns.READ_FILE_SIGN).send("${"+remoteFile+"}");
-				String sign = client.readUTFString();
-				if (sign.equals(IOSigns.FOUND_COMMAND)) {
-					sign = client.readUTFString();
-					if (sign.equals(IOSigns.FOUND_FILE_SIGN)) {
-						String fileName = client.readUTFString();
-						Long fileSize = client.readLong();
-						String localFile = localPath + fileName;
-						String result = client.getFileFromServer(localFile, fileSize);
-						logger.info(result);
-						client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
-					} else {
-						logger.error(IOSigns.NOT_FOUND_FILE_SIGN);
-					}
-				} else {
-					logger.error(IOSigns.NOT_FOUND_COMMAND);
-				}
+				String result = client.send(IOSigns.READ_FILE_SIGN).send("${"+remoteFile+"}").getGetFileFromServerResult(client, localPath);
+				
+				System.out.println(result);
 			} catch (Exception e) {
 				logger.error("GetFileFromServer has error", e);
 			}
-			
 			return null;
 		}
 
@@ -116,27 +100,9 @@ public class TestFileHandler {
 				File localFile = new File(localFilePath);
 				
 				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
-				client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+","+ localFile.getName() +","+localFile.length()+"}");
+				String result = client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+","+ localFile.getName() +","+localFile.length()+"}").getSendFileToServerResult(client, localFile);
 				
-				String sign = client.readUTFString();
-				if (sign.equals(IOSigns.FOUND_COMMAND)) {
-					sign = client.readUTFString();
-					if (sign.equals(IOSigns.WRITE_FILE_SUCCESS)) {
-
-						client.sendFileToServer(localFile);
-						
-						sign = client.readUTFString();
-						if (sign.equals(IOSigns.FINISH_SIGN)) {
-							client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭	
-						} else {
-							System.out.println(sign);
-						}
-					} else {
-						System.out.println(IOSigns.WRITE_FILE_FAIL);
-					}
-				} else {
-					System.out.println(IOSigns.NOT_FOUND_COMMAND);
-				}
+				System.out.println(result);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

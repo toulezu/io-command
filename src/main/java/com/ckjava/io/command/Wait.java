@@ -3,6 +3,17 @@ package com.ckjava.io.command;
 import java.io.IOException;
 
 public abstract class Wait {
+	
+	/**
+	 * The amount of time to wait before giving up; the default is 30 seconds
+	 */
+	public static final long DEFAULT_TIMEOUT = 30000l;
+
+	/**
+	 * The interval to pause between checking; the default is 500 milliseconds
+	 */
+	public static final long DEFAULT_INTERVAL = 500l;
+	
 	public Wait() {
 	}
 
@@ -13,16 +24,7 @@ public abstract class Wait {
 	/** Returns true when it's time to stop waiting 
 	 * @throws IOException */
 	public abstract boolean until() throws IOException;
-
-	/**
-	 * The amount of time to wait before giving up; the default is 30 seconds
-	 */
-	public static final long DEFAULT_TIMEOUT = 30000l;
-
-	/**
-	 * The interval to pause between checking; the default is 500 milliseconds
-	 */
-	public static final long DEFAULT_INTERVAL = 500l;
+	
 
 	/**
 	 * Wait until the "until" condition returns true or time runs out.
@@ -72,8 +74,9 @@ public abstract class Wait {
 		long start = System.currentTimeMillis();
 		long end = start + timeoutInMilliseconds;
 		while (System.currentTimeMillis() < end) {
-			if (until())
+			if (until()) {
 				return;
+			}
 			try {
 				Thread.sleep(intervalInMilliseconds);
 			} catch (InterruptedException e) {

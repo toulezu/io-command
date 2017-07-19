@@ -50,6 +50,8 @@ public class SendFileToServerHandler implements Callable<String> {
 				connection.writeUTFString(IOSigns.WRITE_FILE_SUCCESS);
 				String result = connection.getFileFromClient(file, Long.valueOf(fileLength));
 				logger.info(result);
+				
+				connection.writeUTFString(result);
 				connection.writeUTFString(IOSigns.FINISH_SIGN);
 			} else {
 				connection.writeUTFString(IOSigns.WRITE_FILE_FAIL);
