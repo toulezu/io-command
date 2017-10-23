@@ -1,10 +1,12 @@
 package com.ckjava.io.command;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.server.SocketServer;
-import com.ckjava.utils.ArrayUtils;
 
 /**
  * the main class of this app
@@ -17,16 +19,25 @@ public class AppMain {
 	
 	public static void main(String[] args) {
 		
-		logger.info("args.length = " + args.length);
-		// 用例文件
-		String pOption = ArrayUtils.getValue(args, 0);
-		Integer port = Integer.parseInt(ArrayUtils.getValue(args, 1));
-		if (!pOption.equals("-p")) {
-			logger.warn("want option -p, unkown option " + pOption);
+		String port = null;
+		try {
+			InputStream in = AppMain.class.getResourceAsStream("/application.properties");
+			Properties p = new Properties();
+			p.load(in);
+			
+			port = p.getProperty("server.port");
+		} catch (Exception e) {
+			logger.error("error read port", e);
+		}
+		
+		if (port != null) {
+			new SocketServer(Integer.parseInt(port));
+			
+			logger.info("server start, port is " + port);
+		} else {
+			logger.error("error read port, port is null");
 			System.exit(0);
 		}
-		new SocketServer(port);
 		
-		logger.info("server start, port is " + port);
 	}
 }
