@@ -1,5 +1,6 @@
 package com.ckjava.io.command.handler;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
@@ -38,10 +39,11 @@ public class CommandHandler implements Runnable {
 		try {
 			String[] details = detail.split(SEMICOLON);
 			String detail = ArrayUtils.getValue(details, 0);
-			String[] charsets = ArrayUtils.getValue(details, 1).split(EQUALS);
+			String dir = ArrayUtils.getValue(details, 1);
+			String[] charsets = ArrayUtils.getValue(details, 2).split(EQUALS);
 			String charset = ArrayUtils.getValue(charsets, 1);
 			
-			CommandUtils.execTask(detail, charset, connection.getSocketOutputStream());
+			CommandUtils.execTask(detail, null, new File(dir), charset, connection.getSocketOutputStream());
 			connection.writeUTFString(IOSigns.FINISH_RUN_COMMAND_SIGN);
 		} catch (IOException e) {
 			logger.error("CommandHandler run has error", e);

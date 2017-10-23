@@ -53,7 +53,7 @@ public class SocketClient {
 		if (sign.equals(IOSigns.FOUND_COMMAND)) {
 			while (true) {
 				sign = client.readUTFString();
-				logger.info(sign);
+				logger.debug(sign);
 				
 				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
 					client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
@@ -88,7 +88,7 @@ public class SocketClient {
 				String saveResult = client.getFileFromServer(localFile, fileSize);
 				result.append(saveResult);
 				
-				logger.info(saveResult);
+				logger.debug(saveResult);
 				client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭
 			} else {
 				logger.error(IOSigns.NOT_FOUND_FILE_SIGN);
@@ -110,7 +110,7 @@ public class SocketClient {
 				client.sendFileToServer(localFile);
 				
 				sign = client.readUTFString();
-				logger.info(sign);
+				logger.debug(sign);
 				
 				if (sign.equals(IOSigns.FINISH_SIGN)) {
 					client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭	
@@ -118,10 +118,10 @@ public class SocketClient {
 					result.append(sign).append(StringUtils.LF);
 				}
 			} else {
-				logger.info(IOSigns.WRITE_FILE_FAIL);
+				logger.debug(IOSigns.WRITE_FILE_FAIL);
 			}
 		} else {
-			logger.info(IOSigns.NOT_FOUND_COMMAND);
+			logger.debug(IOSigns.NOT_FOUND_COMMAND);
 		}
 		
 		return result.toString();
@@ -273,7 +273,7 @@ public class SocketClient {
         		tempLen += readLen;
 				dos.write(bytes, 0, readLen);
 			}
-        	logger.info("client send file to server size is " + tempLen + " byte");
+        	logger.debug("client send file to server size is " + tempLen + " byte");
         } catch (IOException e) {
         	logger.info("SocketClient sendFileToServer has error", e);
         } finally {
