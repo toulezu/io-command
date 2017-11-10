@@ -9,9 +9,20 @@ public class ThreadService {
 		new RuntimeException("wrong operation");
 	}
 	
-	private static ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+	/**
+	 * 最大同时支持多少个客户端
+	 */
+	private static final int maxClientSize = 10;
+	
+	private static ExecutorService handleClientService = Executors.newFixedThreadPool(maxClientSize);
+	
+	private static ExecutorService executorService = Executors.newCachedThreadPool();
 	
 	public static ExecutorService getExecutorService() {
 		return executorService;
+	}
+	
+	public static ExecutorService getHandleClientService() {
+		return handleClientService;
 	}
 }

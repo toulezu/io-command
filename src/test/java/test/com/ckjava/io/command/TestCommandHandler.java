@@ -35,7 +35,7 @@ public class TestCommandHandler {
 	@Test
 	public void testMultiInvoke() {
 		List<RunCommandThread> threadList = new ArrayList<>();
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 10; i++) {
 			threadList.add(new RunCommandThread());
 		}
 		try {
@@ -54,7 +54,7 @@ public class TestCommandHandler {
 				String osType = OSUtils.getCurrentOSType();
 				String command = "ifconfig";
 				if (osType.equals(OSUtils.WINDOWS)) {
-					command = "ipconfig";
+					command = "ipconfig;c:/";
 				}
 				command = command.concat(";charset=GBK");
 				

@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
  *
  * 2017年4月11日-下午4:34:04
  */
-public class ServerConnection {
-	private static Logger logger = LoggerFactory.getLogger(ServerConnection.class);
+public class ServerConnectionAction {
+	private static Logger logger = LoggerFactory.getLogger(ServerConnectionAction.class);
 	
     private Socket socket;
 
-    public ServerConnection(Socket socket) {
+    public ServerConnectionAction(Socket socket) {
         this.socket = socket;
     }
     

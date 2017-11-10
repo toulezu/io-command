@@ -29,8 +29,7 @@ public class SocketServer {
         } catch (IOException e) {
         	logger.info("init ServerSocket has error", e);
         }
-        ListeningThread listeningThread = new ListeningThread(serverSocket);
-        listeningThread.start();
+        new Thread(new ServerListenClientRunner(serverSocket)).start();
     }
     
     /*

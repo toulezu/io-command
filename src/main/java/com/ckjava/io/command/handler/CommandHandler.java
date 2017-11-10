@@ -7,12 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.constants.IOSigns;
-import com.ckjava.io.command.server.ServerConnection;
+import com.ckjava.io.command.server.ServerConnectionAction;
 import com.ckjava.utils.ArrayUtils;
 import com.ckjava.utils.CommandUtils;
 
 /**
  * 处理命令
+ * 
+ * command;path;charset=UTF-8 , like ipconfig;c:/;charset=GBK
  * 
  * @author chen_k
  *
@@ -25,10 +27,10 @@ public class CommandHandler implements Runnable {
 	private static final String SEMICOLON = ";";
 	private static final String EQUALS = "=";
 	
-	private ServerConnection connection;
+	private ServerConnectionAction connection;
 	private String detail;
 	
-	public CommandHandler(ServerConnection connection, String detail) {
+	public CommandHandler(ServerConnectionAction connection, String detail) {
 		super();
 		this.connection = connection;
 		this.detail = detail;

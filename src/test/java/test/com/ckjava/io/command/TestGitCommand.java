@@ -4,10 +4,48 @@ import java.net.InetAddress;
 
 import com.ckjava.io.command.client.SocketClient;
 import com.ckjava.io.command.constants.IOSigns;
+import com.ckjava.io.command.server.SocketServer;
 import com.ckjava.utils.ArrayUtils;
 
 public class TestGitCommand {
 	public static void main(String[] args) {
+		//testGitShow();
+		//checkIoCommandStatus();
+		
+		/*try {
+			SocketClient client = new SocketClient(InetAddress.getByName("10.3.6.245"), 16800);
+			client.send(IOSigns.CLOSE_SERVER_SIGN);
+			client.closeMe();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}*/
+		
+		
+		new SocketServer(19800);
+		System.out.println("Server starts, port is " + 19800);
+	}
+
+	public static void checkIoCommandStatus() {
+		try {
+			SocketClient client = new SocketClient(InetAddress.getByName("10.3.6.245"), 16800);
+			String command = "ifconfig;/;charset=UTF-8";
+			
+			String result = client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").getRunCommandResult(client);
+			//System.out.println(result);
+			String[] results = result.split("\n");
+			for (int i = 0, c = ArrayUtils.getSize(results); i < c; i++) {
+				String lineStr = ArrayUtils.getValue(results, i);
+				System.out.println(lineStr);
+				if (lineStr.contains("10.3.6.245")) {
+					System.out.println("check 10.3.6.245 ok");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void testGitShow() {
 		try {
 			SocketClient client = new SocketClient(InetAddress.getByName("10.3.6.168"), 16800);
 			String command = "git show 323eff2686e8c38beb49deb324bf103a3dd56e67;/var/repo/2/";

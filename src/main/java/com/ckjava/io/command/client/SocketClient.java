@@ -53,7 +53,7 @@ public class SocketClient {
 		if (sign.equals(IOSigns.FOUND_COMMAND)) {
 			while (true) {
 				sign = client.readUTFString();
-				logger.debug(sign);
+				logger.info(sign);
 				
 				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
 					client.send(IOSigns.CLOSE_SERVER_SIGN).closeMe(); // 通知服务器端关闭

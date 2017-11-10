@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.constants.IOSigns;
-import com.ckjava.io.command.server.ServerConnection;
+import com.ckjava.io.command.server.ServerConnectionAction;
 import com.ckjava.utils.ArrayUtils;
 
 /**
@@ -22,10 +22,10 @@ public class SendFileToServerHandler implements Callable<String> {
 
 	private static Logger logger = LoggerFactory.getLogger(CommandHandler.class);
 	
-	private ServerConnection connection;
+	private ServerConnectionAction connection;
 	private String detail;
 	
-	public SendFileToServerHandler(ServerConnection connection, String detail) {
+	public SendFileToServerHandler(ServerConnectionAction connection, String detail) {
 		super();
 		this.connection = connection;
 		this.detail = detail;
