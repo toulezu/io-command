@@ -24,7 +24,7 @@ import com.ckjava.utils.StringUtils;
  * @author chen_k
  *
  */
-public class ServerHandleClientConnectionRunner implements Callable<ClientInfo> {
+public class ServerHandleClientConnectionRunner implements Callable<String> {
 	
 	private static Logger logger = LoggerFactory.getLogger(ServerHandleClientConnectionRunner.class);
 	private static final String COMMAND_REG = "(\\$\\{.*\\})";
@@ -40,7 +40,7 @@ public class ServerHandleClientConnectionRunner implements Callable<ClientInfo> 
     }
 
     @Override
-    public ClientInfo call() throws Exception {
+    public String call() throws Exception {
     	long start = System.currentTimeMillis();
     	// read message from socket
     	BufferedReader reader = null;
@@ -61,8 +61,7 @@ public class ServerHandleClientConnectionRunner implements Callable<ClientInfo> 
             	if (reader.ready() && StringUtils.isNotBlank((command = reader.readLine()))) {
             		if (StringUtils.isBlank(command)) {
             			stopRunning();
-            			clientInfo.setRunResult("client send unsupported command");
-            			return clientInfo;
+            			return "client send unsupported command";
             		}
             		// TODO 这里以后增加客户端权限校验功能
                 	logger.info("{} send command = {}", clientInfo.getClientInfo(), command);
@@ -98,8 +97,7 @@ public class ServerHandleClientConnectionRunner implements Callable<ClientInfo> 
         }
         
         long totalConsume = System.currentTimeMillis() - start;
-        clientInfo.setRunResult("total consume time is:" + totalConsume + "ms");
-        return clientInfo;
+        return "total consume time is:" + totalConsume + "ms";
     }
     
     public String getCommandDetail(String message) {

@@ -8,6 +8,7 @@ public class ClientInfo {
 	private int hostPort;
 	private String runResult;
 	private Socket socket;
+	private long serverAcceptTime;
 	
 	public String getHostName() {
 		return hostName;
@@ -33,21 +34,75 @@ public class ClientInfo {
 	public void setSocket(Socket socket) {
 		this.socket = socket;
 	}
-	
 	public String getRunResult() {
 		return runResult;
 	}
 	public void setRunResult(String runResult) {
 		this.runResult = runResult;
 	}
-	public ClientInfo(Socket socket, String hostName, String hostAddress, int hostPort) {
+	public long getServerAcceptTime() {
+		return serverAcceptTime;
+	}
+	public void setServerAcceptTime(long serverAcceptTime) {
+		this.serverAcceptTime = serverAcceptTime;
+	}
+	public ClientInfo(Socket socket, String hostName, String hostAddress, int hostPort, long serverAcceptTime) {
 		super();
 		this.socket = socket;
 		this.hostName = hostName;
 		this.hostAddress = hostAddress;
 		this.hostPort = hostPort;
+		this.serverAcceptTime = serverAcceptTime;
 	}
 	public String getClientInfo() {
 		return "hostName:"+hostName+"["+hostAddress+":"+hostPort+"]";
 	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((hostAddress == null) ? 0 : hostAddress.hashCode());
+		result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
+		result = prime * result + hostPort;
+		result = prime * result + ((runResult == null) ? 0 : runResult.hashCode());
+		result = prime * result + (int) (serverAcceptTime ^ (serverAcceptTime >>> 32));
+		result = prime * result + ((socket == null) ? 0 : socket.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClientInfo other = (ClientInfo) obj;
+		if (hostAddress == null) {
+			if (other.hostAddress != null)
+				return false;
+		} else if (!hostAddress.equals(other.hostAddress))
+			return false;
+		if (hostName == null) {
+			if (other.hostName != null)
+				return false;
+		} else if (!hostName.equals(other.hostName))
+			return false;
+		if (hostPort != other.hostPort)
+			return false;
+		if (runResult == null) {
+			if (other.runResult != null)
+				return false;
+		} else if (!runResult.equals(other.runResult))
+			return false;
+		if (serverAcceptTime != other.serverAcceptTime)
+			return false;
+		if (socket == null) {
+			if (other.socket != null)
+				return false;
+		} else if (!socket.equals(other.socket))
+			return false;
+		return true;
+	}
+	
 }

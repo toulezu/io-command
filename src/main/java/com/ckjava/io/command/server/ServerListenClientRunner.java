@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ckjava.io.command.client.ClientFutureInfo;
 import com.ckjava.io.command.client.ClientInfo;
 import com.ckjava.io.command.thread.ThreadService;
 
@@ -28,7 +29,7 @@ public class ServerListenClientRunner implements Runnable {
 	private final Logger logger = LoggerFactory.getLogger(ServerListenClientRunner.class);
 	
     private ServerSocket serverSocket;
-    private List<Future<ClientInfo>> clientResultList = Collections.synchronizedList(new LinkedList<Future<ClientInfo>>());
+    private List<ClientFutureInfo> clientResultList = Collections.synchronizedList(new LinkedList<ClientFutureInfo>());
     private boolean isRunning;
 
     public ServerListenClientRunner(ServerSocket serverSocket) {
@@ -52,11 +53,12 @@ public class ServerListenClientRunner implements Runnable {
                 Socket socket = serverSocket.accept();
                 InetAddress remoteClient = socket.getInetAddress();
                 
-                ClientInfo clientInfo = new ClientInfo(socket, remoteClient.getHostName(), remoteClient.getHostAddress(), socket.getPort());
+                ClientInfo clientInfo = new ClientInfo(socket, remoteClient.getHostName(), remoteClient.getHostAddress(), socket.getPort(), System.currentTimeMillis());
                 
                 logger.info("incoming remote client, remoteClientInfo = {}", clientInfo.getClientInfo());
-                Future<ClientInfo> result = ThreadService.getHandleClientService().submit(new ServerHandleClientConnectionRunner(clientInfo));
-                clientResultList.add(result);
+                Future<String> clientFuture = ThreadService.getHandleClientService().submit(new ServerHandleClientConnectionRunner(clientInfo));
+                
+                clientResultList.add(new ClientFutureInfo(clientInfo, clientFuture));
                 
             } catch (IOException e) {
             	logger.error("ListeningThread.run has error", e);
