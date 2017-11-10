@@ -4,9 +4,8 @@
   <artifactId>io-command</artifactId>
   <versioning>
     <versions>
-      <version>0.0.1-SNAPSHOT</version>
-      <version>0.0.2-SNAPSHOT</version>
+      <version>0.0.3-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20171024073258</lastUpdated>
+    <lastUpdated>20171110073532</lastUpdated>
   </versioning>
 </metadata>
