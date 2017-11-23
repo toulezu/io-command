@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.Wait;
+import com.ckjava.io.command.client.listener.OnReceiveCommandListener;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.utils.StringUtils;
 
@@ -46,6 +47,7 @@ public class SocketClient {
 	 * @param client SocketClient
 	 * @return String
 	 */
+	@Deprecated
 	public String getRunCommandResult(SocketClient client) {
 		StringBuilder result = new StringBuilder();
 		
@@ -66,6 +68,29 @@ public class SocketClient {
 			logger.info(IOSigns.NOT_FOUND_COMMAND);
 		}
 		return result.toString();
+	}
+	
+	/**
+	 * 发送命令后基于事件对结果进行处理
+	 * @param client
+	 * @param onReceiveCommandListener
+	 * @return
+	 */
+	public void setOnReceiveCommandListener(SocketClient client, OnReceiveCommandListener<SocketClient> onReceiveCommandListener) {
+		String sign = client.readUTFString();
+		onReceiveCommandListener.onStartExecuteCommand(sign);
+		if (sign.equals(IOSigns.FOUND_COMMAND)) {
+			while (true) {
+				sign = client.readUTFString();
+				
+				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
+					onReceiveCommandListener.onFinishExecuteCommand(client);
+					break;
+				} else {
+					onReceiveCommandListener.onExecuteCommand(sign);
+				}
+			}
+		}
 	}
 	
 	/**
