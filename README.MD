@@ -21,6 +21,10 @@ new SocketServer(19800);
 
 ## 目前支持的功能
 
+- [客户端在服务器端执行命令](https://github.com/toulezu/io-command#客户端在服务器端执行命令)
+- [客户端向服务器端传输文件](https://github.com/toulezu/io-command#客户端向服务器端传输文件)
+- [客户端获取服务器端文件](https://github.com/toulezu/io-command#客户端获取服务器端文件)
+
 #### 客户端在服务器端执行命令
 
 示例代码如下
