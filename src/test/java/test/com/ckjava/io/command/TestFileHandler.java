@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.client.SocketClient;
+import com.ckjava.io.command.client.listener.impl.DefaultOnGetFileFromServerListenerImpl;
+import com.ckjava.io.command.client.listener.impl.DefaultOnSendFileToServerListenerImpl;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.io.command.server.SocketServer;
 
@@ -57,7 +59,7 @@ public class TestFileHandler {
 	@Test
 	public void testSendFileToServer() {
 		List<SendFileToServerThread> threadList = new ArrayList<>();
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 10; i++) {
 			threadList.add(new SendFileToServerThread());
 		}
 		try {
@@ -78,9 +80,10 @@ public class TestFileHandler {
 				String localPath = TestFileHandler.class.getResource("/local-file/").getPath();
 				
 				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
-				String result = client.send(IOSigns.READ_FILE_SIGN).send("${"+remoteFile+"}").getGetFileFromServerResult(client, localPath);
+				//String result = client.send(IOSigns.READ_FILE_SIGN).send("${"+remoteFile+"}").getGetFileFromServerResult(client, localPath);
 				
-				System.out.println(result);
+				client.send(IOSigns.READ_FILE_SIGN).send("${"+remoteFile+"}").onGetFileFromServerListener(new DefaultOnGetFileFromServerListenerImpl(client, localPath));
+				
 			} catch (Exception e) {
 				logger.error("GetFileFromServer has error", e);
 			}
@@ -100,9 +103,11 @@ public class TestFileHandler {
 				File localFile = new File(localFilePath);
 				
 				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
-				String result = client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+","+ localFile.getName() +","+localFile.length()+"}").getSendFileToServerResult(client, localFile);
+				//String result = client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+","+ localFile.getName() +","+localFile.length()+"}").getSendFileToServerResult(client, localFile);
 				
-				System.out.println(result);
+				client.send(IOSigns.WRITE_FILE_SIGN).send("${"+remoteFilePath+","+ localFile.getName() +","+localFile.length()+"}")
+						.onSendFileToServerListener(new DefaultOnSendFileToServerListenerImpl(client, localFile));
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -21,7 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.Wait;
+import com.ckjava.io.command.client.listener.OnGetFileFromServerListener;
 import com.ckjava.io.command.client.listener.OnReceiveCommandListener;
+import com.ckjava.io.command.client.listener.OnSendFileToServerListener;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.utils.StringUtils;
 
@@ -76,15 +78,15 @@ public class SocketClient {
 	 * @param onReceiveCommandListener
 	 * @return
 	 */
-	public void setOnReceiveCommandListener(SocketClient client, OnReceiveCommandListener<SocketClient> onReceiveCommandListener) {
-		String sign = client.readUTFString();
+	public void setOnReceiveCommandListener(OnReceiveCommandListener onReceiveCommandListener) {
+		String sign = this.readUTFString();
 		onReceiveCommandListener.onStartExecuteCommand(sign);
 		if (sign.equals(IOSigns.FOUND_COMMAND)) {
 			while (true) {
-				sign = client.readUTFString();
+				sign = this.readUTFString();
 				
 				if (sign.equals(IOSigns.FINISH_RUN_COMMAND_SIGN)) {
-					onReceiveCommandListener.onFinishExecuteCommand(client);
+					onReceiveCommandListener.onFinishExecuteCommand();
 					break;
 				} else {
 					onReceiveCommandListener.onExecuteCommand(sign);
@@ -99,6 +101,7 @@ public class SocketClient {
 	 * @param localPath
 	 * @return
 	 */
+	@Deprecated
 	public String getGetFileFromServerResult(SocketClient client, String localPath) {
 		StringBuilder result = new StringBuilder();
 		
@@ -110,7 +113,7 @@ public class SocketClient {
 				Long fileSize = client.readLong();
 				String localFile = localPath + fileName;
 				
-				String saveResult = client.getFileFromServer(localFile, fileSize);
+				String saveResult = client.saveFileFromServer(localFile, fileSize);
 				result.append(saveResult);
 				
 				logger.debug(saveResult);
@@ -124,6 +127,33 @@ public class SocketClient {
 		return result.toString();
 	}
 	
+	/**
+	 * 发送命令后基于事件对结果进行处理
+	 * @param client
+	 * @param onReceiveCommandListener
+	 * @return
+	 */
+	public void onGetFileFromServerListener(OnGetFileFromServerListener listener) {
+		String sign = this.readUTFString();
+		listener.onStartGetFile(sign);
+		if (sign.equals(IOSigns.FOUND_COMMAND)) {
+			sign = this.readUTFString();
+			if (sign.equals(IOSigns.FOUND_FILE_SIGN)) {
+				String fileName = this.readUTFString();
+				Long fileSize = this.readLong();
+				
+				String localFile = listener.onFindFile(fileName, fileSize);
+				
+				String saveResult = this.saveFileFromServer(localFile, fileSize);
+				
+				listener.onFinishSaveFile(saveResult);
+			} else {
+				listener.onNotFindFile();
+			}
+		}
+	}
+	
+	@Deprecated
 	public String getSendFileToServerResult(SocketClient client, File localFile) {
 		StringBuilder result = new StringBuilder();
 		
@@ -150,6 +180,33 @@ public class SocketClient {
 		}
 		
 		return result.toString();
+	}
+	
+
+	/**
+	 * 将文件发送到服务器端后的事件处理
+	 * 
+	 * @param listener
+	 */
+	public void onSendFileToServerListener(OnSendFileToServerListener listener) {
+		String sign = this.readUTFString();
+		listener.onStartSendFile(sign);
+		if (sign.equals(IOSigns.FOUND_COMMAND)) {
+			sign = this.readUTFString();
+			if (sign.equals(IOSigns.WRITE_FILE_SUCCESS)) {
+				File localFile = listener.onSendFile();
+				
+				String clientResult = this.sendFileToServer(localFile);
+				String serverResult = this.readUTFString();
+				
+				sign = this.readUTFString();
+				if (sign.equals(IOSigns.FINISH_SIGN)) {
+					listener.onFinishSendFile(clientResult, serverResult);
+				}
+			} else {
+				listener.onFailSendFile();
+			}
+		}
 	}
 
 	public SocketClient send(String message) {
@@ -236,7 +293,7 @@ public class SocketClient {
 	 * @param fileSize
 	 * @return
 	 */
-	public String getFileFromServer(String savePath, Long fileSize) {
+	public String saveFileFromServer(String savePath, Long fileSize) {
 		DataOutputStream fileOut = null;
 		try {
 			fileOut = new DataOutputStream(new BufferedOutputStream(new BufferedOutputStream(new FileOutputStream(savePath))));
@@ -286,7 +343,7 @@ public class SocketClient {
 	 * @param fileSize
 	 * @return
 	 */
-	public void sendFileToServer(File file) {
+	public String sendFileToServer(File file) {
     	DataInputStream dis = null;
         try {
         	dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
@@ -298,9 +355,10 @@ public class SocketClient {
         		tempLen += readLen;
 				dos.write(bytes, 0, readLen);
 			}
-        	logger.debug("client send file to server size is " + tempLen + " byte");
+        	return "client send file to server size is " + tempLen + " byte";
         } catch (IOException e) {
-        	logger.info("SocketClient sendFileToServer has error", e);
+        	logger.error("SocketClient sendFileToServer has error", e);
+        	return "SocketClient sendFileToServer has error";
         } finally {
         	try {
         		dis.close();

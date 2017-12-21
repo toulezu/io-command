@@ -1,4 +1,4 @@
-package com.ckjava.io.command.handler;
+package com.ckjava.io.command.server.handler;
 
 public class HandlerConfig {
 

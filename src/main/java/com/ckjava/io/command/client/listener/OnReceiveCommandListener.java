@@ -6,7 +6,7 @@ package com.ckjava.io.command.client.listener;
  *
  * @param <T>
  */
-public interface OnReceiveCommandListener<T> {
+public interface OnReceiveCommandListener {
 	
 	/**
 	 * 开始处理指令
@@ -27,5 +27,5 @@ public interface OnReceiveCommandListener<T> {
 	 * 
 	 * @param t
 	 */
-	public void onFinishExecuteCommand(T t);
+	public void onFinishExecuteCommand();
 }

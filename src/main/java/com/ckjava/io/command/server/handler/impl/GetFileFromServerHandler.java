@@ -1,9 +1,10 @@
-package com.ckjava.io.command.handler;
+package com.ckjava.io.command.server.handler.impl;
 
 import java.io.File;
 
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.io.command.server.ServerConnectionAction;
+import com.ckjava.io.command.server.handler.Handler;
 
 /**
  * 读取文件
@@ -12,14 +13,14 @@ import com.ckjava.io.command.server.ServerConnectionAction;
  *
  * 2017年4月11日-下午4:10:44
  */
-public class GetFileFromServerHandler implements Runnable {
+public class GetFileFromServerHandler implements Runnable, Handler {
 	
 	private ServerConnectionAction connection;
 	private String detail;
 
-	public GetFileFromServerHandler(ServerConnectionAction connection, String message) {
+	public GetFileFromServerHandler(ServerConnectionAction connection, String detail) {
 		super();
-		this.detail = message;
+		this.detail = detail;
 		this.connection = connection;
 	}
 

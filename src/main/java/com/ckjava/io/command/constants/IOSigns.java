@@ -14,10 +14,10 @@ public class IOSigns {
 	public static final String FOUND_COMMAND = "found_command";
 	public static final String NOT_FOUND_COMMAND = "not_found_command";
 	
-	public static final String RUN_COMMAND_SIGN = "run_command";
+	public static final String RUN_COMMAND_SIGN = "Command";
 	
-	public static final String READ_FILE_SIGN = "read_file";
-	public static final String WRITE_FILE_SIGN = "write_file";
+	public static final String READ_FILE_SIGN = "GetFileFromServer";
+	public static final String WRITE_FILE_SIGN = "SendFileToServer";
 	
 	public static final String FOUND_FILE_SIGN = "found_file";
 	public static final String NOT_FOUND_FILE_SIGN = "not_found_file";

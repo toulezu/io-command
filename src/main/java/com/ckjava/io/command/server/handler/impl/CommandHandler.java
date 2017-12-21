@@ -1,4 +1,4 @@
-package com.ckjava.io.command.handler;
+package com.ckjava.io.command.server.handler.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.io.command.server.ServerConnectionAction;
+import com.ckjava.io.command.server.handler.Handler;
 import com.ckjava.utils.ArrayUtils;
 import com.ckjava.utils.CommandUtils;
 
@@ -20,7 +21,7 @@ import com.ckjava.utils.CommandUtils;
  *
  * 2017年4月11日-下午4:10:44
  */
-public class CommandHandler implements Runnable {
+public class CommandHandler implements Runnable, Handler {
 	
 	private static Logger logger = LoggerFactory.getLogger(CommandHandler.class);
 	

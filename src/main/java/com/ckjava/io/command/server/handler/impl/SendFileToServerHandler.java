@@ -1,24 +1,25 @@
-package com.ckjava.io.command.handler;
+package com.ckjava.io.command.server.handler.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.io.command.server.ServerConnectionAction;
+import com.ckjava.io.command.server.handler.BlockAble;
+import com.ckjava.io.command.server.handler.Handler;
 import com.ckjava.utils.ArrayUtils;
 
 /**
- * 写文件
+ * 客户端向服务器端发送文件
  * 
  * @author chen_k
  *
  * 2017年4月11日-下午4:10:44
  */
-public class SendFileToServerHandler implements Callable<String> {
+public class SendFileToServerHandler implements Runnable, Handler, BlockAble {
 
 	private static Logger logger = LoggerFactory.getLogger(CommandHandler.class);
 	
@@ -32,7 +33,7 @@ public class SendFileToServerHandler implements Callable<String> {
 	}
 
 	@Override
-	public String call() {
+	public void run() {
 		String[] details = detail.split(",");
 		String filePath = ArrayUtils.getValue(details, 0);
 		String fileName = ArrayUtils.getValue(details, 1);
@@ -49,7 +50,6 @@ public class SendFileToServerHandler implements Callable<String> {
 			if (file.createNewFile()) {
 				connection.writeUTFString(IOSigns.WRITE_FILE_SUCCESS);
 				String result = connection.getFileFromClient(file, Long.valueOf(fileLength));
-				logger.info(result);
 				
 				connection.writeUTFString(result);
 				connection.writeUTFString(IOSigns.FINISH_SIGN);
@@ -60,7 +60,6 @@ public class SendFileToServerHandler implements Callable<String> {
 			logger.error("WriteFileHandler run has error", e);
 			connection.writeUTFString(IOSigns.ERROR_SIGN);
 		}
-		return null;
 	}
 
 }

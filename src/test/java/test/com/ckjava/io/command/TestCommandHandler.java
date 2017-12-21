@@ -12,11 +12,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.ckjava.io.command.client.SocketClient;
-import com.ckjava.io.command.client.listener.OnReceiveCommandListener;
+import com.ckjava.io.command.client.listener.impl.DefaultOnReceiveCommandListenerImpl;
 import com.ckjava.io.command.constants.IOSigns;
 import com.ckjava.io.command.server.SocketServer;
 import com.ckjava.utils.OSUtils;
-import com.ckjava.utils.StringUtils;
 
 public class TestCommandHandler {
 
@@ -52,7 +51,7 @@ public class TestCommandHandler {
 		@Override
 		public String call() throws Exception {
 			try {
-				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
+				final SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
 				String osType = OSUtils.getCurrentOSType();
 				String command = "ifconfig";
 				if (osType.equals(OSUtils.WINDOWS)) {
@@ -61,29 +60,7 @@ public class TestCommandHandler {
 				command = command.concat(";charset=GBK");
 				
 				//String result = client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").getRunCommandResult(client);
-				client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").setOnReceiveCommandListener(client, new OnReceiveCommandListener<SocketClient>() {
-
-					StringBuilder result = new StringBuilder();
-					@Override
-					public void onStartExecuteCommand(String sign) {
-						System.out.println("onStartExecuteCommand = " + sign);
-					}
-
-					@Override
-					public void onExecuteCommand(String sign) {
-						result.append(sign).append(StringUtils.LF);
-					}
-
-					@Override
-					public void onFinishExecuteCommand(SocketClient t) {
-						t.send(IOSigns.CLOSE_SERVER_SIGN).closeMe();
-						System.out.println("finish run command");
-						System.out.println("--------------------------");
-						System.out.println(result);
-						System.out.println("--------------------------");
-					}
-					
-				});
+				client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").setOnReceiveCommandListener(new DefaultOnReceiveCommandListenerImpl(client));
 				
 			} catch (Exception e) {
 				e.printStackTrace();
