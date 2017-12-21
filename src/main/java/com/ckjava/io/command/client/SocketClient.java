@@ -78,7 +78,7 @@ public class SocketClient {
 	 * @param onReceiveCommandListener
 	 * @return
 	 */
-	public void setOnReceiveCommandListener(OnReceiveCommandListener onReceiveCommandListener) {
+	public void onReceiveCommandListener(OnReceiveCommandListener onReceiveCommandListener) {
 		String sign = this.readUTFString();
 		onReceiveCommandListener.onStartExecuteCommand(sign);
 		if (sign.equals(IOSigns.FOUND_COMMAND)) {

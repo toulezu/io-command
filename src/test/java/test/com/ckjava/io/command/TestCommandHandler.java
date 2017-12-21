@@ -51,7 +51,7 @@ public class TestCommandHandler {
 		@Override
 		public String call() throws Exception {
 			try {
-				final SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
+				SocketClient client = new SocketClient(InetAddress.getLocalHost(), port);
 				String osType = OSUtils.getCurrentOSType();
 				String command = "ifconfig";
 				if (osType.equals(OSUtils.WINDOWS)) {
@@ -60,7 +60,7 @@ public class TestCommandHandler {
 				command = command.concat(";charset=GBK");
 				
 				//String result = client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").getRunCommandResult(client);
-				client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").setOnReceiveCommandListener(new DefaultOnReceiveCommandListenerImpl(client));
+				client.send(IOSigns.RUN_COMMAND_SIGN).send("${"+command+"}").onReceiveCommandListener(new DefaultOnReceiveCommandListenerImpl(client));
 				
 			} catch (Exception e) {
 				e.printStackTrace();
